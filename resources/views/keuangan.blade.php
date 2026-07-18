@@ -38,7 +38,7 @@
         <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
             <div class="flex items-center gap-2 text-emerald-600 font-bold mb-6">
                 <i data-lucide="trending-up" class="h-5 w-5"></i>
-                <span>Estimasi Pendapatan Desa 2026 (Total: Rp 1,615 M)</span>
+                <span>Estimasi Pendapatan Desa 2026 (Total: Rp {{ number_format(array_sum(array_column($apbdes['pendapatan'], 'jumlah')), 0, ',', '.') }})</span>
             </div>
             
             <div class="h-64 relative flex items-center justify-center">
@@ -63,7 +63,7 @@
         <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
             <div class="flex items-center gap-2 text-indigo-600 font-bold mb-6">
                 <i data-lucide="pie-chart" class="h-5 w-5"></i>
-                <span>Rencana Belanja Desa 2026 (Total: Rp 1,605 M)</span>
+                <span>Rencana Belanja Desa 2026 (Total: Rp {{ number_format(array_sum(array_column($apbdes['belanja'], 'jumlah')), 0, ',', '.') }})</span>
             </div>
             
             <div class="h-64 relative flex items-center justify-center">
@@ -250,10 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
     new Chart(revCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Dana Desa (APBN)', 'Alokasi Dana Desa (ADD)', 'Bantuan Pemprov/Kab', 'PADes'],
+            labels: {!! json_encode(array_column($apbdes['pendapatan'], 'sumber')) !!},
             datasets: [{
-                data: [52, 28, 13, 7],
-                backgroundColor: ['#047857', '#14b8a6', '#0284c7', '#f59e0b'],
+                data: {!! json_encode(array_column($apbdes['pendapatan'], 'persen')) !!},
+                backgroundColor: ['#047857', '#14b8a6', '#0284c7', '#f59e0b', '#ec4899', '#64748b'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]
@@ -275,10 +275,10 @@ document.addEventListener('DOMContentLoaded', () => {
     new Chart(expCtx, {
         type: 'pie',
         data: {
-            labels: ['Pemerintahan', 'Infrastruktur', 'Pembinaan', 'Pemberdayaan', 'Kebencanaan'],
+            labels: {!! json_encode(array_column($apbdes['belanja'], 'bidang')) !!},
             datasets: [{
-                data: [30, 35, 12, 15, 8],
-                backgroundColor: ['#4f46e5', '#a855f7', '#ec4899', '#f59e0b', '#64748b'],
+                data: {!! json_encode(array_column($apbdes['belanja'], 'persen')) !!},
+                backgroundColor: ['#4f46e5', '#a855f7', '#ec4899', '#f59e0b', '#64748b', '#0d9488', '#0284c7'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]

@@ -11,6 +11,7 @@ use App\Models\Komoditas;
 use App\Models\AsetTani;
 use App\Models\Regulasi;
 use App\Models\Umkm;
+use App\Models\Apbdes;
 
 class VillageController extends Controller
 {
@@ -124,21 +125,22 @@ class VillageController extends Controller
     // Transparansi Keuangan (APBDes) & Regulasi Hukum
     public function keuangan()
     {
-        // Anggaran Pendapatan & Belanja Desa 2026
+        // Fetch APBDes data dynamically from database and map it to structural arrays
+        $pendapatan = Apbdes::where('kategori', 'pendapatan')->orderBy('id', 'asc')->get()->map(fn($item) => [
+            'sumber' => $item->rincian,
+            'jumlah' => $item->jumlah,
+            'persen' => $item->persen
+        ])->toArray();
+
+        $belanja = Apbdes::where('kategori', 'belanja')->orderBy('id', 'asc')->get()->map(fn($item) => [
+            'bidang' => $item->rincian,
+            'jumlah' => $item->jumlah,
+            'persen' => $item->persen
+        ])->toArray();
+
         $apbdes = [
-            'pendapatan' => [
-                ['sumber' => 'Dana Desa (APBN)', 'jumlah' => 845000000, 'persen' => 52],
-                ['sumber' => 'Alokasi Dana Desa (ADD)', 'jumlah' => 450000000, 'persen' => 28],
-                ['sumber' => 'Bantuan Keuangan Provinsi/Kabupaten', 'jumlah' => 210000000, 'persen' => 13],
-                ['sumber' => 'Pendapatan Asli Desa (PADes)', 'jumlah' => 110000000, 'persen' => 7]
-            ],
-            'belanja' => [
-                ['bidang' => 'Penyelenggaraan Pemerintahan Desa', 'jumlah' => 480000000, 'persen' => 30],
-                ['bidang' => 'Pembangunan Infrastruktur & Fasilitas', 'jumlah' => 560000000, 'persen' => 35],
-                ['bidang' => 'Pembinaan Kemasyarakatan (Kader, Posyandu)', 'jumlah' => 190000000, 'persen' => 12],
-                ['bidang' => 'Pemberdayaan Masyarakat (Pertanian, UMKM)', 'jumlah' => 240000000, 'persen' => 15],
-                ['bidang' => 'Penanggulangan Bencana & Darurat', 'jumlah' => 135000000, 'persen' => 8]
-            ]
+            'pendapatan' => $pendapatan,
+            'belanja' => $belanja
         ];
 
         // Fetch regulasi from database
