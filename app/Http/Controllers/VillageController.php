@@ -12,6 +12,7 @@ use App\Models\AsetTani;
 use App\Models\Regulasi;
 use App\Models\Umkm;
 use App\Models\Apbdes;
+use App\Models\AgribisnisStat;
 
 class VillageController extends Controller
 {
@@ -104,6 +105,7 @@ class VillageController extends Controller
         // Fetch komoditas & aset tani from database
         $komoditas = Komoditas::orderBy('id', 'asc')->get();
         $aset_logistik = AsetTani::orderBy('id', 'asc')->get();
+        $stats = AgribisnisStat::first();
 
         $kalender_tanam = [
             ['musim' => 'Musim Hujan (Rendengan)', 'bulan' => 'November - Februari', 'kegiatan' => 'Penanaman Padi Utama', 'status' => 'Irigasi lancar, waspada hama wereng.'],
@@ -119,7 +121,7 @@ class VillageController extends Controller
             ['langkah' => '5. Penjualan & Distribusi Pasar', 'deskripsi' => 'Komoditas dipasarkan ke Pasar Kabupaten Boyolali, Koperasi Susu Lokal, serta pengepul kemitraan desa.']
         ];
 
-        return view('agribisnis', compact('komoditas', 'kalender_tanam', 'aset_logistik', 'alur_distribusi'));
+        return view('agribisnis', compact('komoditas', 'kalender_tanam', 'aset_logistik', 'alur_distribusi', 'stats'));
     }
 
     // Transparansi Keuangan (APBDes) & Regulasi Hukum

@@ -12,6 +12,7 @@ use App\Models\AsetTani;
 use App\Models\Regulasi;
 use App\Models\Umkm;
 use App\Models\Apbdes;
+use App\Models\AgribisnisStat;
 
 class AdminController extends Controller
 {
@@ -162,7 +163,8 @@ class AdminController extends Controller
     public function komoditasIndex()
     {
         $items = Komoditas::orderBy('id', 'asc')->get();
-        return view('admin.komoditas', compact('items'));
+        $stats = AgribisnisStat::first();
+        return view('admin.komoditas', compact('items', 'stats'));
     }
 
     public function komoditasStore(Request $request)
@@ -201,6 +203,24 @@ class AdminController extends Controller
         $item = Komoditas::findOrFail($id);
         $item->delete();
         return redirect()->route('admin.komoditas.index')->with('success', 'Komoditas berhasil dihapus!');
+    }
+
+    public function updateAgribisnisStats(Request $request)
+    {
+        $data = $request->validate([
+            'luas_lahan' => 'required|string|max:255',
+            'jumlah_produksi' => 'required|string|max:255',
+            'jumlah_petani' => 'required|string|max:255',
+            'jumlah_kelompok_tani' => 'required|string|max:255',
+        ]);
+
+        $stats = AgribisnisStat::first();
+        if (!$stats) {
+            $stats = new AgribisnisStat();
+        }
+        $stats->fill($data)->save();
+
+        return redirect()->route('admin.komoditas.index')->with('success', 'Statistik agribisnis berhasil diperbarui!');
     }
 
     // 6. Aset Tani CRUD
@@ -257,6 +277,7 @@ class AdminController extends Controller
             'nomor' => 'required|string|max:255',
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
+            'link_url' => 'nullable|url|max:2048',
         ]);
 
         $data['tanggal'] = now()->translatedFormat('d F Y');
@@ -271,6 +292,7 @@ class AdminController extends Controller
             'nomor' => 'required|string|max:255',
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
+            'link_url' => 'nullable|url|max:2048',
         ]);
 
         $item = Regulasi::findOrFail($id);

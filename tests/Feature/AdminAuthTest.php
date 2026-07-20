@@ -151,3 +151,54 @@ test('admin can access apbdes index and perform CRUD', function () {
     $response->assertRedirect(route('admin.apbdes.index'));
     $this->assertDatabaseMissing('apbdes', ['id' => $apbdes->id]);
 });
+
+test('admin can update agribisnis stats', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('admin.komoditas.index'));
+    $response->assertStatus(200);
+
+    $response = $this->actingAs($admin)->put(route('admin.agribisnis.stats.update'), [
+        'luas_lahan' => '260 Hektar',
+        'jumlah_produksi' => '1.700 Ton',
+        'jumlah_petani' => '540 Orang',
+        'jumlah_kelompok_tani' => '14 Kelompok',
+    ]);
+    $response->assertRedirect(route('admin.komoditas.index'));
+    $this->assertDatabaseHas('agribisnis_stats', [
+        'luas_lahan' => '260 Hektar',
+        'jumlah_produksi' => '1.700 Ton',
+        'jumlah_petani' => '540 Orang',
+        'jumlah_kelompok_tani' => '14 Kelompok',
+    ]);
+});
+
+test('admin can manage regulasi with external link', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+    ]);
+
+    // 1. Create
+    $response = $this->actingAs($admin)->post(route('admin.regulasi.store'), [
+        'nomor' => 'Perdes No. 10 Tahun 2026',
+        'judul' => 'Regulasi Uji Coba Link',
+        'kategori' => 'Peraturan Desa',
+        'link_url' => 'https://drive.google.com/file/d/1234567890/view',
+    ]);
+
+    $response->assertRedirect(route('admin.regulasi.index'));
+    $this->assertDatabaseHas('regulasis', [
+        'nomor' => 'Perdes No. 10 Tahun 2026',
+        'judul' => 'Regulasi Uji Coba Link',
+        'link_url' => 'https://drive.google.com/file/d/1234567890/view',
+    ]);
+
+    $regulasi = \App\Models\Regulasi::where('nomor', 'Perdes No. 10 Tahun 2026')->first();
+
+    // 2. Delete
+    $response = $this->actingAs($admin)->delete(route('admin.regulasi.destroy', $regulasi->id));
+    $response->assertRedirect(route('admin.regulasi.index'));
+    $this->assertDatabaseMissing('regulasis', ['id' => $regulasi->id]);
+});

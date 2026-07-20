@@ -13,7 +13,54 @@
     </div>
 </div>
 
-<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 space-y-20" x-data="{ activeSection: 'komoditas' }">
+<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 space-y-12" x-data="{ activeSection: 'komoditas' }">
+    
+    <!-- Agribusiness Stats KPI Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Card 1: Luas Lahan -->
+        <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-xs flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 shadow-xs">
+                <i data-lucide="map" class="h-6 w-6"></i>
+            </div>
+            <div>
+                <span class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">Luas Lahan Tani</span>
+                <span class="text-lg font-black text-slate-900 leading-tight block">{{ $stats->luas_lahan ?? '245 Hektar' }}</span>
+            </div>
+        </div>
+
+        <!-- Card 2: Produksi per Tahun -->
+        <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-xs flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 shadow-xs">
+                <i data-lucide="trending-up" class="h-6 w-6"></i>
+            </div>
+            <div>
+                <span class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">Produksi Per Tahun</span>
+                <span class="text-lg font-black text-slate-900 leading-tight block">{{ $stats->jumlah_produksi ?? '1.500 Ton' }}</span>
+            </div>
+        </div>
+
+        <!-- Card 3: Jumlah Petani -->
+        <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-xs flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 shadow-xs">
+                <i data-lucide="users" class="h-6 w-6"></i>
+            </div>
+            <div>
+                <span class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">Jumlah Petani</span>
+                <span class="text-lg font-black text-slate-900 leading-tight block">{{ $stats->jumlah_petani ?? '520 Orang' }}</span>
+            </div>
+        </div>
+
+        <!-- Card 4: Jumlah Kelompok Tani -->
+        <div class="rounded-2xl bg-white p-5 border border-slate-100 shadow-xs flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 shadow-xs">
+                <i data-lucide="sprout" class="h-6 w-6"></i>
+            </div>
+            <div>
+                <span class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none mb-1">Kelompok Tani</span>
+                <span class="text-lg font-black text-slate-900 leading-tight block">{{ $stats->jumlah_kelompok_tani ?? '12 Kelompok' }}</span>
+            </div>
+        </div>
+    </div>
     
     <!-- Navigation Tabs -->
     <div class="border-b border-slate-200">

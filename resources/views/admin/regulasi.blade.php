@@ -7,7 +7,7 @@
 <div class="space-y-6" x-data="{ 
     showAddModal: false, 
     showEditModal: false, 
-    editItem: { id: '', nomor: '', judul: '', kategori: 'Peraturan Desa' },
+    editItem: { id: '', nomor: '', judul: '', kategori: 'Peraturan Desa', link_url: '' },
     openEdit(item) {
         this.editItem = { ...item };
         this.showEditModal = true;
@@ -41,7 +41,15 @@
                             {{ $item->nomor }}
                         </td>
                         <td class="px-6 py-4 text-slate-700 font-medium">
-                            {{ $item->judul }}
+                            <div class="flex items-center gap-2">
+                                <span>{{ $item->judul }}</span>
+                                @if($item->link_url)
+                                    <a href="{{ $item->link_url }}" target="_blank" class="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition-colors" title="Buka Link Google Drive">
+                                        <i data-lucide="external-link" class="h-3 w-3"></i>
+                                        <span>Drive</span>
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">
                             <span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-0.5 font-bold text-slate-700">
@@ -97,7 +105,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('admin.regulasi.store') }}" method="POST" class="space-y-4">
+                 <form action="{{ route('admin.regulasi.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori Dokumen</label>
@@ -117,6 +125,11 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Judul Dokumen</label>
                         <input type="text" name="judul" required placeholder="Contoh: Tata Tertib Keamanan Dusun I" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Link Google Drive / Dokumen (Opsional)</label>
+                        <input type="url" name="link_url" placeholder="Contoh: https://drive.google.com/file/d/..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">
@@ -167,6 +180,11 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Judul Dokumen</label>
                         <input type="text" name="judul" required x-model="editItem.judul" placeholder="Contoh: Tata Tertib Keamanan Dusun I" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Link Google Drive / Dokumen (Opsional)</label>
+                        <input type="url" name="link_url" x-model="editItem.link_url" placeholder="Contoh: https://drive.google.com/file/d/..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">

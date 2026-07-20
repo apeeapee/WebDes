@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Regulasi extends Model
 {
     protected $table = 'regulasis';
-    protected $fillable = ['nomor', 'judul', 'kategori', 'file_path', 'tanggal'];
+    protected $fillable = ['nomor', 'judul', 'kategori', 'link_url', 'tanggal'];
 }

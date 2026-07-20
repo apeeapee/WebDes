@@ -47,6 +47,7 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/komoditas', [AdminController::class, 'komoditasStore'])->name('admin.komoditas.store');
     Route::put('/admin/komoditas/{id}', [AdminController::class, 'komoditasUpdate'])->name('admin.komoditas.update');
     Route::delete('/admin/komoditas/{id}', [AdminController::class, 'komoditasDestroy'])->name('admin.komoditas.destroy');
+    Route::put('/admin/agribisnis/stats', [AdminController::class, 'updateAgribisnisStats'])->name('admin.agribisnis.stats.update');
 
     // Aset Tani CRUD
     Route::get('/admin/asettani', [AdminController::class, 'asetTaniIndex'])->name('admin.asettani.index');

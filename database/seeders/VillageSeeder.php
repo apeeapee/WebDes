@@ -11,6 +11,7 @@ use App\Models\AsetTani;
 use App\Models\Regulasi;
 use App\Models\Umkm;
 use App\Models\SkriningIspa;
+use App\Models\AgribisnisStat;
 
 class VillageSeeder extends Seeder
 {
@@ -263,6 +264,14 @@ class VillageSeeder extends Seeder
             'gejala' => ['batuk' => true, 'pilek' => true],
             'rekomendasi' => '✅ Gejala Ringan. Istirahat yang cukup, jaga kebersihan tangan.',
             'status' => 'Edukasi Selesai'
+        ]);
+
+        // 9. AgribisnisStat
+        AgribisnisStat::create([
+            'luas_lahan' => '245 Hektar',
+            'jumlah_produksi' => '1.500 Ton',
+            'jumlah_petani' => '520 Orang',
+            'jumlah_kelompok_tani' => '12 Kelompok'
         ]);
     }
 }

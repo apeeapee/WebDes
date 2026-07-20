@@ -16,12 +16,7 @@
 <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 space-y-20" x-data="{
     payStep: 1,
     searchDoc: '',
-    documents: [
-        { nomor: 'Perdes No. 03 Tahun 2025', judul: 'Pengelolaan Sampah dan Kebersihan Lingkungan Desa Banyuurip', kategori: 'Peraturan Desa', tanggal: '12 April 2025' },
-        { nomor: 'Perdes No. 05 Tahun 2025', judul: 'Rencana Kerja Pemerintah Desa (RKPDes) Tahun Anggaran 2026', kategori: 'Peraturan Desa', tanggal: '20 September 2025' },
-        { nomor: 'Perkades No. 02 Tahun 2026', judul: 'Tata Cara Pemberian Insentif Kader Kesehatan Posyandu', kategori: 'Peraturan Kepala Desa', tanggal: '05 Februari 2026' },
-        { nomor: 'Perdes No. 01 Tahun 2026', judul: 'Anggaran Pendapatan dan Belanja Desa (APBDes) Tahun Anggaran 2026', kategori: 'Peraturan Desa', tanggal: '02 Januari 2026' }
-    ],
+    documents: {{ json_encode($regulasi) }},
     filteredDocs() {
         if (!this.searchDoc) return this.documents;
         return this.documents.filter(doc => 
@@ -230,10 +225,18 @@
                         
                         <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-50">
                             <span class="text-[10px] text-slate-400 font-semibold" x-text="doc.tanggal"></span>
-                            <button class="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-sky-50 hover:text-sky-600 transition-colors">
-                                <i data-lucide="download" class="h-3.5 w-3.5"></i>
-                                <span>Unduh</span>
-                            </button>
+                            <template x-if="doc.link_url">
+                                <a :href="doc.link_url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors border border-emerald-100 cursor-pointer">
+                                    <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+                                    <span>Lihat Dokumen</span>
+                                </a>
+                            </template>
+                            <template x-if="!doc.link_url">
+                                <span class="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-400 border border-slate-100 cursor-not-allowed" title="Tautan dokumen belum tersedia">
+                                    <i data-lucide="file-x" class="h-3.5 w-3.5"></i>
+                                    <span>Tidak Ada Link</span>
+                                </span>
+                            </template>
                         </div>
                     </div>
                 </template>

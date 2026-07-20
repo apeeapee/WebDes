@@ -13,6 +13,47 @@
         this.showEditModal = true;
     }
 }">
+    <!-- Statistik Agribisnis Desa Form Card -->
+    <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-200/60">
+        <div class="flex items-center gap-2 mb-4">
+            <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                <i data-lucide="line-chart" class="h-4 w-4"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-900">Statistik Agribisnis Desa</h3>
+        </div>
+        <form action="{{ route('admin.agribisnis.stats.update') }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="luas_lahan" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Luas Lahan</label>
+                    <input type="text" name="luas_lahan" id="luas_lahan" value="{{ old('luas_lahan', $stats->luas_lahan ?? '') }}" required
+                        class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 focus:outline-none" placeholder="e.g. 245 Hektar">
+                </div>
+                <div>
+                    <label for="jumlah_produksi" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Produksi per Tahun</label>
+                    <input type="text" name="jumlah_produksi" id="jumlah_produksi" value="{{ old('jumlah_produksi', $stats->jumlah_produksi ?? '') }}" required
+                        class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 focus:outline-none" placeholder="e.g. 1.500 Ton">
+                </div>
+                <div>
+                    <label for="jumlah_petani" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jumlah Petani</label>
+                    <input type="text" name="jumlah_petani" id="jumlah_petani" value="{{ old('jumlah_petani', $stats->jumlah_petani ?? '') }}" required
+                        class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 focus:outline-none" placeholder="e.g. 520 Orang">
+                </div>
+                <div>
+                    <label for="jumlah_kelompok_tani" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Jumlah Kelompok Tani</label>
+                    <input type="text" name="jumlah_kelompok_tani" id="jumlah_kelompok_tani" value="{{ old('jumlah_kelompok_tani', $stats->jumlah_kelompok_tani ?? '') }}" required
+                        class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 focus:outline-none" placeholder="e.g. 12 Kelompok">
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-4 shadow-sm transition-all cursor-pointer">
+                    <i data-lucide="save" class="h-4 w-4"></i>
+                    <span>Simpan Perubahan Statistik</span>
+                </button>
+            </div>
+        </form>
+    </div>
     <!-- Action Bar -->
     <div class="flex justify-end">
         <button @click="showAddModal = true" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 px-4 shadow-sm transition-all cursor-pointer">
