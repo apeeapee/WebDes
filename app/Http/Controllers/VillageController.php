@@ -173,8 +173,33 @@ class VillageController extends Controller
     // Pemberdayaan UMKM
     public function umkm()
     {
-        // Fetch UMKM from database
-        $umkm = Umkm::orderBy('id', 'desc')->get();
+        $kategoriLabels = [
+            'makanan' => 'Makanan Ringan',
+            'makanan ringan' => 'Makanan Ringan',
+            'minuman' => 'Minuman Kemasan',
+            'minuman kemasan' => 'Minuman Kemasan',
+            'kerajinan' => 'Kerajinan Tangan',
+            'kerajinan tangan' => 'Kerajinan Tangan',
+            'jasa' => 'Jasa / Lainnya',
+            'jasa / lainnya' => 'Jasa / Lainnya',
+        ];
+
+        $umkm = Umkm::orderBy('id', 'desc')->get()->map(fn($item) => [
+            'id' => $item->id,
+            'nama' => $item->nama,
+            'pemilik' => $item->pemilik,
+            'kategori' => strtolower($item->kategori),
+            'kategoriLabel' => $kategoriLabels[strtolower($item->kategori)] ?? ucfirst($item->kategori),
+            'kontak' => $item->kontak,
+            'alamat' => $item->alamat,
+            'deskripsi' => $item->deskripsi,
+            'omzet' => $item->omzet_bulanan,
+            'biaya' => $item->biaya_produksi,
+            'laba' => $item->laba_bersih,
+            'pencatatan' => $item->pencatatan,
+            'produk' => $item->produk ?? [],
+            'gambar' => $item->gambar,
+        ])->toArray();
 
         return view('umkm', compact('umkm'));
     }

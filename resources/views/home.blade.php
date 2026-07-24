@@ -13,7 +13,7 @@
         <!-- Badge KKN -->
         <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-6">
             <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
-            KKN Tematik Universitas Diponegoro 2026
+            KKN Banyuurip Universitas Diponegoro 2026
         </span>
         
         <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl max-w-3xl leading-tight">
@@ -216,12 +216,18 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($berita as $item)
             <div class="flex flex-col overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                <!-- Image Holder (Aesthetic Gradient Placeholder) -->
-                <div class="h-48 w-full bg-gradient-to-br {{ $loop->first ? 'from-emerald-600 to-teal-500' : ($loop->iteration === 2 ? 'from-indigo-600 to-purple-500' : 'from-sky-600 to-teal-500') }} flex items-center justify-center p-6 text-white text-center">
-                    <div>
-                        <i data-lucide="newspaper" class="h-10 w-10 mx-auto opacity-75 mb-2"></i>
-                        <span class="text-xs font-bold uppercase tracking-widest opacity-90">{{ $item['kategori'] }}</span>
-                    </div>
+                <!-- Image Holder (Actual Uploaded Image or Aesthetic Gradient Placeholder) -->
+                <div class="h-48 w-full overflow-hidden flex items-center justify-center bg-slate-100 flex-shrink-0">
+                    @if($item['gambar'] && (str_starts_with($item['gambar'], 'storage/') || file_exists(public_path($item['gambar']))))
+                        <img src="{{ asset($item['gambar']) }}" alt="{{ $item['judul'] }}" class="h-full w-full object-cover">
+                    @else
+                        <div class="h-full w-full bg-gradient-to-br {{ $loop->first ? 'from-emerald-600 to-teal-500' : ($loop->iteration === 2 ? 'from-indigo-600 to-purple-500' : 'from-sky-600 to-teal-500') }} flex items-center justify-center p-6 text-white text-center w-full">
+                            <div>
+                                <i data-lucide="newspaper" class="h-10 w-10 mx-auto opacity-75 mb-2"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest opacity-90">{{ $item['kategori'] }}</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 
                 <div class="flex flex-grow flex-col justify-between p-6">

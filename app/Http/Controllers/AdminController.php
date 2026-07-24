@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Berita;
 use App\Models\Sejarah;
 use App\Models\PerangkatDesa;
@@ -50,8 +51,15 @@ class AdminController extends Controller
             'ringkasan' => 'required|string',
             'kategori' => 'required|string|max:255',
             'tanggal' => 'required|string|max:255',
-            'gambar' => 'nullable|string|max:255',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $filePath = $file->storeAs('berita', $fileName, 'public');
+            $data['gambar'] = 'storage/' . $filePath;
+        }
 
         Berita::create($data);
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil ditambahkan!');
@@ -64,10 +72,25 @@ class AdminController extends Controller
             'ringkasan' => 'required|string',
             'kategori' => 'required|string|max:255',
             'tanggal' => 'required|string|max:255',
-            'gambar' => 'nullable|string|max:255',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         $item = Berita::findOrFail($id);
+
+        if ($request->hasFile('gambar')) {
+            if ($item->gambar) {
+                $oldPath = str_replace('storage/', '', $item->gambar);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $filePath = $file->storeAs('berita', $fileName, 'public');
+            $data['gambar'] = 'storage/' . $filePath;
+        }
+
         $item->update($data);
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil diperbarui!');
     }
@@ -75,6 +98,12 @@ class AdminController extends Controller
     public function beritaDestroy($id)
     {
         $item = Berita::findOrFail($id);
+        if ($item->gambar) {
+            $oldPath = str_replace('storage/', '', $item->gambar);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
         $item->delete();
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil dihapus!');
     }
@@ -321,6 +350,11 @@ class AdminController extends Controller
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
             'omzet' => 'required|string|max:255',
+            'kontak' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'deskripsi' => 'required|string',
+            'produk' => 'required|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         $omzetVal = (int) filter_var($data['omzet'], FILTER_SANITIZE_NUMBER_INT);
@@ -331,19 +365,30 @@ class AdminController extends Controller
         $biayaFormatted = 'Rp ' . number_format($biayaVal, 0, ',', '.');
         $labaFormatted = 'Rp ' . number_format($labaVal, 0, ',', '.');
 
-        Umkm::create([
+        $produkArray = array_map('trim', explode(',', $data['produk']));
+
+        $umkmData = [
             'nama' => $data['nama'],
             'pemilik' => $data['pemilik'],
             'kategori' => strtolower($data['kategori']),
-            'kontak' => '0812-3456-7899',
-            'alamat' => 'RT 01 / RW 01, Banyuurip',
-            'deskripsi' => 'Pelaku usaha lokal binaan yang menyajikan produk unggulan berskala desa.',
+            'kontak' => $data['kontak'],
+            'alamat' => $data['alamat'],
+            'deskripsi' => $data['deskripsi'],
             'omzet_bulanan' => $omzetFormatted,
             'biaya_produksi' => $biayaFormatted,
             'laba_bersih' => $labaFormatted,
             'pencatatan' => 'Buku Kas Sederhana (Dibantu Program KKN Akuntansi)',
-            'produk' => ['Produk Utama', 'Produk Alternatif']
-        ]);
+            'produk' => $produkArray,
+        ];
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $filePath = $file->storeAs('umkm', $fileName, 'public');
+            $umkmData['gambar'] = 'storage/' . $filePath;
+        }
+
+        Umkm::create($umkmData);
 
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil ditambahkan!');
     }
@@ -355,6 +400,11 @@ class AdminController extends Controller
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
             'omzet' => 'required|string|max:255',
+            'kontak' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'deskripsi' => 'required|string',
+            'produk' => 'required|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         $omzetVal = (int) filter_var($data['omzet'], FILTER_SANITIZE_NUMBER_INT);
@@ -365,15 +415,38 @@ class AdminController extends Controller
         $biayaFormatted = 'Rp ' . number_format($biayaVal, 0, ',', '.');
         $labaFormatted = 'Rp ' . number_format($labaVal, 0, ',', '.');
 
+        $produkArray = array_map('trim', explode(',', $data['produk']));
+
         $item = Umkm::findOrFail($id);
-        $item->update([
+
+        $umkmData = [
             'nama' => $data['nama'],
             'pemilik' => $data['pemilik'],
             'kategori' => strtolower($data['kategori']),
+            'kontak' => $data['kontak'],
+            'alamat' => $data['alamat'],
+            'deskripsi' => $data['deskripsi'],
             'omzet_bulanan' => $omzetFormatted,
             'biaya_produksi' => $biayaFormatted,
             'laba_bersih' => $labaFormatted,
-        ]);
+            'produk' => $produkArray,
+        ];
+
+        if ($request->hasFile('gambar')) {
+            if ($item->gambar) {
+                $oldPath = str_replace('storage/', '', $item->gambar);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            $file = $request->file('gambar');
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+            $filePath = $file->storeAs('umkm', $fileName, 'public');
+            $umkmData['gambar'] = 'storage/' . $filePath;
+        }
+
+        $item->update($umkmData);
 
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil diperbarui!');
     }
@@ -381,6 +454,12 @@ class AdminController extends Controller
     public function umkmDestroy($id)
     {
         $item = Umkm::findOrFail($id);
+        if ($item->gambar) {
+            $oldPath = str_replace('storage/', '', $item->gambar);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
         $item->delete();
         return redirect()->route('admin.umkm.index')->with('success', 'UMKM berhasil dihapus!');
     }

@@ -16,64 +16,7 @@
 <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 space-y-12" x-data="{ 
     selectedCategory: 'all',
     selectedUmkm: null,
-    umkms: [
-        {
-            nama: 'Kripik Tempe Rasa Gurih',
-            pemilik: 'Ibu Sumarsih',
-            kategori: 'makanan',
-            kategoriLabel: 'Makanan Ringan',
-            kontak: '0857-1234-5678',
-            alamat: 'RT 02 / RW 01, Dusun I',
-            deskripsi: 'Kripik tempe renyah dengan resep tradisional bumbu ketumbar alami tanpa bahan pengawet.',
-            omzet: 'Rp 4.500.000',
-            biaya: 'Rp 2.100.000',
-            laba: 'Rp 2.400.000',
-            pencatatan: 'Buku Kas Sederhana',
-            produk: ['Kripik Tempe Ori', 'Kripik Tempe Pedas Daun Jeruk']
-        },
-        {
-            nama: 'Kelompok Susu Segar Murni Jaya',
-            pemilik: 'Pak Harjono',
-            kategori: 'minuman',
-            kategoriLabel: 'Peternakan / Minuman',
-            kontak: '0813-9876-5432',
-            alamat: 'RT 04 / RW 02, Dusun II',
-            deskripsi: 'Penyedia susu segar langsung dari peternak sapi perah Banyuurip yang higienis dan berkualitas tinggi.',
-            omzet: 'Rp 18.200.000',
-            biaya: 'Rp 9.800.000',
-            laba: 'Rp 8.400.000',
-            pencatatan: 'Buku Arus Kas & Laba Rugi',
-            produk: ['Susu Segar Murni 1 Liter', 'Susu Pasteurisasi Stroberi / Cokelat']
-        },
-        {
-            nama: 'Kerajinan Anyaman Bambu Lestari',
-            pemilik: 'Mbah Sugeng',
-            kategori: 'kerajinan',
-            kategoriLabel: 'Kerajinan Tangan',
-            kontak: '0899-4567-8901',
-            alamat: 'RT 01 / RW 01, Dusun I',
-            deskripsi: 'Membuat aneka perabotan rumah tangga berbahan bambu lokal seperti besek, tampah, dan kap lampu hias.',
-            omzet: 'Rp 3.000.000',
-            biaya: 'Rp 900.000',
-            laba: 'Rp 2.100.000',
-            pencatatan: 'Buku Penjualan Harian',
-            produk: ['Tampah Hias', 'Besek Makanan (Grosir)', 'Kap Lampu Gantung']
-        },
-        {
-            nama: 'Kopi Robusta Banyuurip',
-            pemilik: 'Mas Danang',
-            kategori: 'minuman',
-            kategoriLabel: 'Minuman Kemasan',
-            kontak: '0821-3344-5566',
-            alamat: 'RT 03 / RW 02, Dusun II',
-            deskripsi: 'Kopi bubuk robusta premium yang dipanen langsung dari perkebunan lereng bukit Banyuurip dengan pemanggangan medium-dark.',
-            omzet: 'Rp 6.000.000',
-            biaya: 'Rp 3.200.000',
-            laba: 'Rp 2.800.000',
-            pencatatan: 'Aplikasi Pembukuan Digital',
-            produk: ['Kopi Bubuk 250gr', 'Green Bean Robusta']
-        }
-    ],
+    umkms: {{ json_encode($umkm) }},
     filteredUmkms() {
         if (this.selectedCategory === 'all') return this.umkms;
         return this.umkms.filter(u => u.kategori === this.selectedCategory);
@@ -113,13 +56,21 @@
         <template x-for="u in filteredUmkms()" :key="u.nama">
             <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col justify-between hover:border-amber-200 transition-colors">
                 <div>
-                    <!-- Image Card placeholder with specific color depending on category -->
-                    <div :class="{
-                        'from-amber-500 to-orange-400': u.kategori === 'makanan',
-                        'from-sky-500 to-indigo-400': u.kategori === 'minuman',
-                        'from-emerald-500 to-teal-400': u.kategori === 'kerajinan'
-                    }" class="h-36 w-full rounded-xl bg-gradient-to-tr flex items-center justify-center text-white mb-5 shadow-inner">
-                        <i data-lucide="store" class="h-10 w-10 opacity-75"></i>
+                    <!-- Image Card with actual uploaded image or placeholder -->
+                    <div class="h-36 w-full rounded-xl overflow-hidden mb-5 border border-slate-100 shadow-inner flex items-center justify-center bg-slate-50 flex-shrink-0">
+                        <template x-if="u.gambar">
+                            <img :src="'/' + u.gambar" class="h-full w-full object-cover" :alt="u.nama">
+                        </template>
+                        <template x-if="!u.gambar">
+                            <div :class="{
+                                'from-amber-500 to-orange-400': u.kategori.includes('makanan'),
+                                'from-sky-500 to-indigo-400': u.kategori.includes('minuman'),
+                                'from-emerald-500 to-teal-400': u.kategori.includes('kerajinan'),
+                                'from-slate-500 to-slate-400': !u.kategori.includes('makanan') && !u.kategori.includes('minuman') && !u.kategori.includes('kerajinan')
+                            }" class="h-full w-full bg-gradient-to-tr flex items-center justify-center text-white">
+                                <i data-lucide="store" class="h-10 w-10 opacity-75"></i>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="flex items-start justify-between gap-4">
@@ -145,7 +96,7 @@
 
                 <div class="mt-8 pt-4 border-t border-slate-50 flex items-center justify-between gap-2">
                     <!-- WhatsApp Contact Link -->
-                    <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-600 font-semibold transition-colors">
+                    <a :href="'https://wa.me/' + (u.kontak.replace(/[^0-9]/g, '').startsWith('0') ? '62' + u.kontak.replace(/[^0-9]/g, '').slice(1) : u.kontak.replace(/[^0-9]/g, ''))" target="_blank" class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-emerald-600 font-semibold transition-colors">
                         <i data-lucide="phone-call" class="h-3.5 w-3.5 text-emerald-500"></i>
                         <span x-text="u.kontak"></span>
                     </a>

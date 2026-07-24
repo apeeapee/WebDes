@@ -3,6 +3,8 @@
 use App\Models\User;
 use App\Models\Berita;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -70,6 +72,8 @@ test('admin user can logout', function () {
 });
 
 test('admin can access berita index and perform CRUD', function () {
+    Storage::fake('public');
+
     $admin = User::factory()->create([
         'role' => 'admin',
     ]);
@@ -79,31 +83,45 @@ test('admin can access berita index and perform CRUD', function () {
     $response->assertStatus(200);
 
     // 2. Create
+    $imageFile = UploadedFile::fake()->image('news.jpg');
     $response = $this->actingAs($admin)->post(route('admin.berita.store'), [
         'judul' => 'Berita KKN Baru',
         'ringkasan' => 'Ringkasan berita KKN terbaru di desa Banyuurip.',
         'kategori' => 'Edukasi',
         'tanggal' => '18 Juli 2026',
+        'gambar' => $imageFile,
     ]);
     $response->assertRedirect(route('admin.berita.index'));
     $this->assertDatabaseHas('beritas', ['judul' => 'Berita KKN Baru']);
 
     $berita = Berita::where('judul', 'Berita KKN Baru')->first();
+    expect($berita->gambar)->not->toBeNull();
+    
+    $storedPath = str_replace('storage/', '', $berita->gambar);
+    Storage::disk('public')->assertExists($storedPath);
 
     // 3. Update
+    $newImageFile = UploadedFile::fake()->image('news_updated.jpg');
     $response = $this->actingAs($admin)->put(route('admin.berita.update', $berita->id), [
         'judul' => 'Berita KKN Terupdate',
         'ringkasan' => 'Ringkasan berita KKN terbaru di desa Banyuurip.',
         'kategori' => 'Edukasi',
         'tanggal' => '18 Juli 2026',
+        'gambar' => $newImageFile,
     ]);
     $response->assertRedirect(route('admin.berita.index'));
     $this->assertDatabaseHas('beritas', ['judul' => 'Berita KKN Terupdate']);
+    
+    $berita->refresh();
+    $newStoredPath = str_replace('storage/', '', $berita->gambar);
+    Storage::disk('public')->assertExists($newStoredPath);
+    Storage::disk('public')->assertMissing($storedPath);
 
     // 4. Delete
     $response = $this->actingAs($admin)->delete(route('admin.berita.destroy', $berita->id));
     $response->assertRedirect(route('admin.berita.index'));
     $this->assertDatabaseMissing('beritas', ['id' => $berita->id]);
+    Storage::disk('public')->assertMissing($newStoredPath);
 });
 
 test('non-admin user cannot access admin berita index', function () {

@@ -7,16 +7,21 @@
 <div class="space-y-6" x-data="{ 
     showAddModal: false, 
     showEditModal: false, 
-    editItem: { id: '', nama: '', pemilik: '', kategori: 'Makanan Ringan', omzet_bulanan: '' },
+    editItem: { id: '', nama: '', pemilik: '', kategori: 'Makanan Ringan', omzet: '', kontak: '', alamat: '', deskripsi: '', produk: '', gambar: '' },
     openEdit(item) {
-        // Parse omzet integer from formatted Rp string (e.g. 'Rp 2.500.000' -> 2500000)
-        let omzetInt = item.omzet_bulanan.replace(/[^0-9]/g, '');
+        let omzetInt = item.omzet_bulanan ? item.omzet_bulanan.replace(/[^0-9]/g, '') : '';
+        let produkStr = Array.isArray(item.produk) ? item.produk.join(', ') : (item.produk || '');
         this.editItem = { 
             id: item.id,
             nama: item.nama,
             pemilik: item.pemilik,
             kategori: item.kategori,
-            omzet: omzetInt
+            omzet: omzetInt,
+            kontak: item.kontak || '',
+            alamat: item.alamat || '',
+            deskripsi: item.deskripsi || '',
+            produk: produkStr,
+            gambar: item.gambar || ''
         };
         this.showEditModal = true;
     }
@@ -47,7 +52,18 @@
                     @forelse($items as $item)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">
-                            {{ $item->nama }}
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                    @if($item->gambar && (str_starts_with($item->gambar, 'storage/') || file_exists(public_path($item->gambar))))
+                                        <img src="{{ asset($item->gambar) }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="h-full w-full bg-amber-50 flex items-center justify-center text-amber-700">
+                                            <i data-lucide="store" class="h-5 w-5"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <span>{{ $item->nama }}</span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-slate-700 font-medium whitespace-nowrap">
                             {{ $item->pemilik }}
@@ -109,7 +125,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('admin.umkm.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('admin.umkm.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -126,16 +142,42 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori Usaha</label>
                             <select name="kategori" required class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
-                                <option>Makanan Ringan</option>
-                                <option>Minuman Kemasan</option>
-                                <option>Kerajinan Tangan</option>
-                                <option>Jasa / Lainnya</option>
+                                <option value="makanan ringan">Makanan Ringan</option>
+                                <option value="minuman kemasan">Minuman Kemasan</option>
+                                <option value="kerajinan tangan">Kerajinan Tangan</option>
+                                <option value="jasa / lainnya">Jasa / Lainnya</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Omzet Bulanan (Angka)</label>
                             <input type="text" name="omzet" required placeholder="Contoh: 2500000" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">No. WhatsApp / Kontak</label>
+                            <input type="text" name="kontak" required placeholder="Contoh: 0812-3456-7890" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Usaha</label>
+                            <input type="text" name="alamat" required placeholder="Contoh: RT 02 / RW 01, Dusun I" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Usaha</label>
+                        <textarea name="deskripsi" required rows="3" placeholder="Tulis deskripsi singkat produk dan keunggulan usaha..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Produk Unggulan (Pisahkan dengan koma)</label>
+                        <input type="text" name="produk" required placeholder="Contoh: Kripik Ori, Kripik Balado, Kripik Keju" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Foto Tempat Usaha / Produk (Opsional)</label>
+                        <input type="file" name="gambar" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">
@@ -165,7 +207,7 @@
                     </button>
                 </div>
 
-                <form :action="'{{ route('admin.umkm.index') }}/' + editItem.id" method="POST" class="space-y-4">
+                <form :action="'{{ route('admin.umkm.index') }}/' + editItem.id" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     @method('PUT')
                     <div class="grid grid-cols-2 gap-4">
@@ -193,6 +235,38 @@
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Omzet Bulanan (Angka)</label>
                             <input type="text" name="omzet" required x-model="editItem.omzet" placeholder="Contoh: 2500000" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">No. WhatsApp / Kontak</label>
+                            <input type="text" name="kontak" required x-model="editItem.kontak" placeholder="Contoh: 0812-3456-7890" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Usaha</label>
+                            <input type="text" name="alamat" required x-model="editItem.alamat" placeholder="Contoh: RT 02 / RW 01, Dusun I" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Usaha</label>
+                        <textarea name="deskripsi" required x-model="editItem.deskripsi" rows="3" placeholder="Tulis deskripsi singkat produk dan keunggulan usaha..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Produk Unggulan (Pisahkan dengan koma)</label>
+                        <input type="text" name="produk" required x-model="editItem.produk" placeholder="Contoh: Kripik Ori, Kripik Balado" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ganti Foto Usaha (Opsional)</label>
+                        <input type="file" name="gambar" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                        <template x-if="editItem.gambar && editItem.gambar.startsWith('storage/')">
+                            <div class="mt-2 text-xs text-slate-500 flex items-center gap-1.5">
+                                <i data-lucide="image" class="h-3.5 w-3.5 text-emerald-600"></i>
+                                <span>Foto aktif: <a :href="'/' + editItem.gambar" target="_blank" class="text-emerald-600 hover:underline font-bold" x-text="editItem.gambar.split('/').pop()"></a></span>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">

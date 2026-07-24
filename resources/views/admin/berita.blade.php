@@ -37,7 +37,18 @@
                     @forelse($items as $item)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 font-bold text-slate-900">
-                            <span class="line-clamp-1">{{ $item->judul }}</span>
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                                    @if($item->gambar && (str_starts_with($item->gambar, 'storage/') || file_exists(public_path($item->gambar))))
+                                        <img src="{{ asset($item->gambar) }}" class="h-full w-full object-cover">
+                                    @else
+                                        <div class="h-full w-full bg-emerald-50 flex items-center justify-center text-emerald-750">
+                                            <i data-lucide="newspaper" class="h-5 w-5"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <span class="line-clamp-1">{{ $item->judul }}</span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-slate-600">
                             <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/10">
@@ -93,7 +104,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('admin.berita.store') }}" method="POST" class="space-y-4">
+                 <form action="{{ route('admin.berita.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori Berita</label>
@@ -118,6 +129,11 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ringkasan Warta</label>
                         <textarea name="ringkasan" required rows="4" placeholder="Tulis isi ringkasan berita secara detail..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Foto Berita (Opsional)</label>
+                        <input type="file" name="gambar" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">
@@ -147,7 +163,7 @@
                     </button>
                 </div>
 
-                <form :action="'{{ route('admin.berita.index') }}/' + editItem.id" method="POST" class="space-y-4">
+                <form :action="'{{ route('admin.berita.index') }}/' + editItem.id" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     @method('PUT')
                     <div>
@@ -173,6 +189,17 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ringkasan Warta</label>
                         <textarea name="ringkasan" required x-model="editItem.ringkasan" rows="4" placeholder="Tulis isi ringkasan berita secara detail..." class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ganti Foto Berita (Opsional)</label>
+                        <input type="file" name="gambar" accept="image/*" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                        <template x-if="editItem.gambar && editItem.gambar.startsWith('storage/')">
+                            <div class="mt-2 text-xs text-slate-500 flex items-center gap-1.5">
+                                <i data-lucide="image" class="h-3.5 w-3.5 text-emerald-600"></i>
+                                <span>Foto aktif: <a :href="'/' + editItem.gambar" target="_blank" class="text-emerald-600 hover:underline font-bold" x-text="editItem.gambar.split('/').pop()"></a></span>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">
