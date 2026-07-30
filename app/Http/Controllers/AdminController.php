@@ -14,6 +14,7 @@ use App\Models\Regulasi;
 use App\Models\Umkm;
 use App\Models\Apbdes;
 use App\Models\AgribisnisStat;
+use App\Models\DesaAntikorupsi;
 
 class AdminController extends Controller
 {
@@ -30,6 +31,7 @@ class AdminController extends Controller
             'total_perangkat' => PerangkatDesa::count(),
             'total_komoditas' => Komoditas::count(),
             'total_aset' => AsetTani::count(),
+            'total_antikorupsi' => DesaAntikorupsi::count(),
         ];
 
         $recent_screenings = SkriningIspa::orderBy('id', 'desc')->take(5)->get();
@@ -517,5 +519,52 @@ class AdminController extends Controller
         $item = Apbdes::findOrFail($id);
         $item->delete();
         return redirect()->route('admin.apbdes.index')->with('success', 'Anggaran APBDes berhasil dihapus!');
+    }
+
+    // 11. Desa Antikorupsi CRUD
+    public function antikorupsiIndex()
+    {
+        $items = DesaAntikorupsi::orderBy('id', 'desc')->get();
+        return view('admin.antikorupsi', compact('items'));
+    }
+
+    public function antikorupsiStore(Request $request)
+    {
+        $data = $request->validate([
+            'nomor' => 'required|string|max:255',
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'link_drive' => 'nullable|url|max:2048',
+            'status' => 'required|string|max:255',
+        ]);
+
+        $data['tanggal'] = now()->translatedFormat('d F Y');
+
+        DesaAntikorupsi::create($data);
+        return redirect()->route('admin.antikorupsi.index')->with('success', 'Dokumen Desa Antikorupsi berhasil ditambahkan!');
+    }
+
+    public function antikorupsiUpdate(Request $request, $id)
+    {
+        $data = $request->validate([
+            'nomor' => 'required|string|max:255',
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'link_drive' => 'nullable|url|max:2048',
+            'status' => 'required|string|max:255',
+        ]);
+
+        $item = DesaAntikorupsi::findOrFail($id);
+        $item->update($data);
+        return redirect()->route('admin.antikorupsi.index')->with('success', 'Dokumen Desa Antikorupsi berhasil diperbarui!');
+    }
+
+    public function antikorupsiDestroy($id)
+    {
+        $item = DesaAntikorupsi::findOrFail($id);
+        $item->delete();
+        return redirect()->route('admin.antikorupsi.index')->with('success', 'Dokumen Desa Antikorupsi berhasil dihapus!');
     }
 }

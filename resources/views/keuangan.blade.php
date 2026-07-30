@@ -4,12 +4,23 @@
 
 @section('content')
 <!-- Page Header -->
-<div class="bg-gradient-to-r from-sky-700 to-indigo-600 py-16 text-white">
+<div class="bg-gradient-to-r from-sky-800 via-indigo-700 to-emerald-700 py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Transparansi Keuangan & Pusat Regulasi</h1>
-        <p class="mt-2 text-sky-100 max-w-2xl">
-            Visualisasi realisasi anggaran APBDes, panduan praktis pembayaran pajak PBB-P2 online, serta pusat berkas dokumen peraturan resmi desa.
-        </p>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Transparansi Keuangan & Pusat Regulasi</h1>
+                <p class="mt-2 text-sky-100 max-w-2xl text-sm sm:text-base leading-relaxed">
+                    Visualisasi rincian sumber pendapatan desa (ADD, Dana Desa, Pajak Bagi Hasil, Bankeu, & PADes), panduan pembayaran pajak PBB-P2 online, serta integrasi dokumen Desa Antikorupsi.
+                </p>
+            </div>
+
+            <!-- Quick Link to Desa Antikorupsi Portal -->
+            <a href="{{ route('desa-antikorupsi') }}" class="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-5 py-3 text-xs font-bold text-white border border-white/20 shadow-xs transition-all shrink-0">
+                <i data-lucide="shield-check" class="h-5 w-5 text-emerald-300"></i>
+                <span>Portal Desa Antikorupsi</span>
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -30,54 +41,194 @@
     <!-- Top: APBDes Interactive Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Revenue Chart Box -->
-        <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
-            <div class="flex items-center gap-2 text-emerald-600 font-bold mb-6">
-                <i data-lucide="trending-up" class="h-5 w-5"></i>
-                <span>Estimasi Pendapatan Desa 2026 (Total: Rp {{ number_format(array_sum(array_column($apbdes['pendapatan'], 'jumlah')), 0, ',', '.') }})</span>
-            </div>
-            
-            <div class="h-64 relative flex items-center justify-center">
-                <canvas id="revenueChart"></canvas>
-            </div>
-            
-            <!-- Revenue List -->
-            <div class="mt-6 space-y-2.5">
-                @foreach($apbdes['pendapatan'] as $inc)
-                <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-600 flex items-center gap-1.5">
-                        <span class="h-2 w-2 rounded-full {{ $loop->first ? 'bg-emerald-600' : ($loop->iteration === 2 ? 'bg-teal-500' : ($loop->iteration === 3 ? 'bg-sky-500' : 'bg-amber-500')) }}"></span>
-                        {{ $inc['sumber'] }}
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2 text-emerald-600 font-bold">
+                        <i data-lucide="trending-up" class="h-5 w-5"></i>
+                        <span class="text-sm">Estimasi Pendapatan Desa 2026</span>
+                    </div>
+                    <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                        Total: Rp {{ number_format(array_sum(array_column($apbdes['pendapatan'], 'jumlah')), 0, ',', '.') }}
                     </span>
-                    <strong class="text-slate-900 font-semibold">Rp {{ number_format($inc['jumlah']) }} ({{ $inc['persen'] }}%)</strong>
                 </div>
-                @endforeach
+                
+                <div class="h-64 relative flex items-center justify-center">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <!-- Revenue List -->
+                <div class="mt-6 space-y-2.5">
+                    @foreach($apbdes['pendapatan'] as $inc)
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-600 flex items-center gap-1.5 font-medium">
+                            <span class="h-2.5 w-2.5 rounded-full 
+                                {{ $loop->first ? 'bg-emerald-600' : 
+                                  ($loop->iteration === 2 ? 'bg-teal-500' : 
+                                  ($loop->iteration === 3 ? 'bg-sky-500' : 
+                                  ($loop->iteration === 4 ? 'bg-indigo-500' : 'bg-amber-500'))) }}"></span>
+                            {{ $inc['sumber'] }}
+                        </span>
+                        <strong class="text-slate-900 font-bold">Rp {{ number_format($inc['jumlah']) }} ({{ $inc['persen'] }}%)</strong>
+                    </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
         <!-- Expense Chart Box -->
-        <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
-            <div class="flex items-center gap-2 text-indigo-600 font-bold mb-6">
-                <i data-lucide="pie-chart" class="h-5 w-5"></i>
-                <span>Rencana Belanja Desa 2026 (Total: Rp {{ number_format(array_sum(array_column($apbdes['belanja'], 'jumlah')), 0, ',', '.') }})</span>
-            </div>
-            
-            <div class="h-64 relative flex items-center justify-center">
-                <canvas id="expenseChart"></canvas>
-            </div>
-            
-            <!-- Expense List -->
-            <div class="mt-6 space-y-2.5">
-                @foreach($apbdes['belanja'] as $exp)
-                <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-600 flex items-center gap-1.5">
-                        <span class="h-2 w-2 rounded-full {{ $loop->first ? 'bg-indigo-600' : ($loop->iteration === 2 ? 'bg-purple-500' : ($loop->iteration === 3 ? 'bg-pink-500' : ($loop->iteration === 4 ? 'bg-amber-500' : 'bg-slate-400'))) }}"></span>
-                        {{ $exp['bidang'] }}
+        <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2 text-indigo-600 font-bold">
+                        <i data-lucide="pie-chart" class="h-5 w-5"></i>
+                        <span class="text-sm">Rencana Belanja Desa 2026</span>
+                    </div>
+                    <span class="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
+                        Total: Rp {{ number_format(array_sum(array_column($apbdes['belanja'], 'jumlah')), 0, ',', '.') }}
                     </span>
-                    <strong class="text-slate-900 font-semibold">Rp {{ number_format($exp['jumlah']) }} ({{ $exp['persen'] }}%)</strong>
                 </div>
-                @endforeach
+                
+                <div class="h-64 relative flex items-center justify-center">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                
+                <!-- Expense List -->
+                <div class="mt-6 space-y-2.5">
+                    @foreach($apbdes['belanja'] as $exp)
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-600 flex items-center gap-1.5 font-medium">
+                            <span class="h-2.5 w-2.5 rounded-full {{ $loop->first ? 'bg-indigo-600' : ($loop->iteration === 2 ? 'bg-purple-500' : ($loop->iteration === 3 ? 'bg-pink-500' : ($loop->iteration === 4 ? 'bg-amber-500' : 'bg-slate-400'))) }}"></span>
+                            {{ $exp['bidang'] }}
+                        </span>
+                        <strong class="text-slate-900 font-bold">Rp {{ number_format($exp['jumlah']) }} ({{ $exp['persen'] }}%)</strong>
+                    </div>
+                    @endforeach
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Detailed Revenue Breakdown Cards (5 Specific Categories) -->
+    <div class="border-t border-slate-200/80 pt-16">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-700">Rincian Sumber Anggaran APBDes</h2>
+            <p class="mt-1 text-2xl font-extrabold text-slate-900">Penjabaran Komponen Pendapatan Desa</p>
+            <p class="mt-2 text-xs text-slate-600">Struktur penerimaan keuangan Desa Banyuurip berdasarkan 5 kategori klasifikasi transfer dan pendapatan daerah.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- 1. Dana Desa (DD) -->
+            <div class="rounded-2xl bg-white p-5 shadow-xs border border-emerald-100 hover:border-emerald-300 transition-all card-hover-effect flex flex-col justify-between">
+                <div>
+                    <div class="h-9 w-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold mb-3">
+                        <i data-lucide="landmark" class="h-5 w-5"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">Transfer APBN</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-1">Dana Desa (DD)</h3>
+                    <p class="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                        Dana transfer dari APBN Pemerintah Pusat khusus untuk pembangunan sarana/prasarana desa, penanganan stunting, ketahanan pangan, dan BLT.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <span class="text-xs font-extrabold text-emerald-700 block">Rp 845.000.000</span>
+                    <span class="text-[10px] text-slate-500">Porsi: 47% dari APBDes</span>
+                </div>
+            </div>
+
+            <!-- 2. Alokasi Dana Desa (ADD) -->
+            <div class="rounded-2xl bg-white p-5 shadow-xs border border-teal-100 hover:border-teal-300 transition-all card-hover-effect flex flex-col justify-between">
+                <div>
+                    <div class="h-9 w-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-3">
+                        <i data-lucide="building-2" class="h-5 w-5"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-teal-700 uppercase tracking-wider block">Transfer APBD Kab</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-1">Alokasi Dana Desa (ADD)</h3>
+                    <p class="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                        Dana alokasi dari APBD Kabupaten Boyolali untuk penghasilan tetap (Siltap) Kades & Perangkat, tunjukkan BPD, serta operasional Pemdes.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <span class="text-xs font-extrabold text-teal-700 block">Rp 450.000.000</span>
+                    <span class="text-[10px] text-slate-500">Porsi: 25% dari APBDes</span>
+                </div>
+            </div>
+
+            <!-- 3. Bagi Hasil Pajak & Retribusi (PBH) -->
+            <div class="rounded-2xl bg-white p-5 shadow-xs border border-sky-100 hover:border-sky-300 transition-all card-hover-effect flex flex-col justify-between">
+                <div>
+                    <div class="h-9 w-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold mb-3">
+                        <i data-lucide="receipt-text" class="h-5 w-5"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">Bagi Hasil Daerah</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-1">Pajak & Retribusi (PBH)</h3>
+                    <p class="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                        Bagian dari hasil penerimaan Pajak Daerah (PBB-P2) & Retribusi Kabupaten Boyolali yang dibagikan secara adil ke Desa Banyuurip.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <span class="text-xs font-extrabold text-sky-700 block">Rp 180.000.000</span>
+                    <span class="text-[10px] text-slate-500">Porsi: 10% dari APBDes</span>
+                </div>
+            </div>
+
+            <!-- 4. Bantuan Keuangan (Bankeu) -->
+            <div class="rounded-2xl bg-white p-5 shadow-xs border border-indigo-100 hover:border-indigo-300 transition-all card-hover-effect flex flex-col justify-between">
+                <div>
+                    <div class="h-9 w-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold mb-3">
+                        <i data-lucide="coins" class="h-5 w-5"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Bantuan Khusus</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-1">Bantuan Keuangan (Bankeu)</h3>
+                    <p class="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                        Bantuan keuangan khusus dari Pemerintah Provinsi Jawa Tengah dan Pemkab Boyolali untuk proyek fasilitas spesifik desa.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <span class="text-xs font-extrabold text-indigo-700 block">Rp 210.000.000</span>
+                    <span class="text-[10px] text-slate-500">Porsi: 12% dari APBDes</span>
+                </div>
+            </div>
+
+            <!-- 5. Pendapatan Asli Desa (PADes) -->
+            <div class="rounded-2xl bg-white p-5 shadow-xs border border-amber-100 hover:border-amber-300 transition-all card-hover-effect flex flex-col justify-between">
+                <div>
+                    <div class="h-9 w-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-3">
+                        <i data-lucide="wallet-cards" class="h-5 w-5"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">Pendapatan Mandiri</span>
+                    <h3 class="font-bold text-slate-900 text-sm mt-1">Pendapatan Asli Desa (PADes)</h3>
+                    <p class="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                        Hasil penerimaan mandiri desa dari sewa tanah kas desa, bagi hasil deviden BUMDes Banyuurip, dan swadaya partisipasi warga.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100">
+                    <span class="text-xs font-extrabold text-amber-700 block">Rp 115.000.000</span>
+                    <span class="text-[10px] text-slate-500">Porsi: 6% dari APBDes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Highlight: Desa Antikorupsi Drive -->
+    <div class="rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-800 p-8 text-white shadow-lg border border-emerald-700/50 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-start gap-4">
+            <div class="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
+                <i data-lucide="shield-check" class="h-6 w-6 text-emerald-300"></i>
+            </div>
+            <div>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 uppercase tracking-wider">Fitur Terbaru</span>
+                <h3 class="text-xl font-extrabold text-white mt-0.5">Desa Antikorupsi & Pengawasan Terbuka KPK</h3>
+                <p class="text-xs text-emerald-100 max-w-xl mt-1 leading-relaxed">
+                    Setiap bukti dokumen pengelolaan keuangan, SOP pengadaan barang/jasa, serta hasil pengawasan BPD disimpan transparan di Google Drive yang dapat diakses publik secara realtime.
+                </p>
+            </div>
+        </div>
+
+        <a href="{{ route('desa-antikorupsi') }}" class="inline-flex items-center gap-2 rounded-xl bg-white text-emerald-950 hover:bg-emerald-50 px-5 py-3 text-xs font-extrabold shadow-md transition-colors shrink-0">
+            <span>Buka Portal Desa Antikorupsi</span>
+            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+        </a>
     </div>
 
     <!-- Middle: PBB-P2 Online Tax Payment Guide (Lintang) -->
@@ -115,7 +266,7 @@
                     <div class="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3">
                         <i data-lucide="link" class="h-5 w-5 text-sky-600"></i>
                         <span class="text-xs text-slate-600">
-                            Akses Portal Resmi: <a href="#" class="text-sky-600 font-bold hover:underline">bppkad.boyolali.go.id/pajakonline</a> (Gunakan 18 digit NOP Anda)
+                            Akses Portal Resmi: <a href="https://bppkad.boyolali.go.id" target="_blank" class="text-sky-600 font-bold hover:underline">bppkad.boyolali.go.id/pajakonline</a> (Gunakan 18 digit NOP Anda)
                         </span>
                     </div>
                 </div>
@@ -184,7 +335,7 @@
             <div class="lg:col-span-1">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-brand-green">Pusat Informasi Hukum</h2>
                 <p class="mt-2 text-3xl font-extrabold text-slate-900 leading-tight">Dokumen & Regulasi Resmi</p>
-                <p class="mt-4 text-slate-600 leading-relaxed">
+                <p class="mt-4 text-slate-600 leading-relaxed text-sm">
                     Akses keterbukaan dokumen publik meliputi Peraturan Desa (Perdes) dan Peraturan Kepala Desa (Perkades) yang berlaku di Banyuurip.
                 </p>
                 
@@ -256,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
             labels: {!! json_encode(array_column($apbdes['pendapatan'], 'sumber')) !!},
             datasets: [{
                 data: {!! json_encode(array_column($apbdes['pendapatan'], 'persen')) !!},
-                backgroundColor: ['#047857', '#14b8a6', '#0284c7', '#f59e0b', '#ec4899', '#64748b'],
+                backgroundColor: ['#047857', '#0d9488', '#0284c7', '#6366f1', '#f59e0b'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]
@@ -281,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             labels: {!! json_encode(array_column($apbdes['belanja'], 'bidang')) !!},
             datasets: [{
                 data: {!! json_encode(array_column($apbdes['belanja'], 'persen')) !!},
-                backgroundColor: ['#4f46e5', '#a855f7', '#ec4899', '#f59e0b', '#64748b', '#0d9488', '#0284c7'],
+                backgroundColor: ['#4f46e5', '#a855f7', '#ec4899', '#f59e0b', '#64748b'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]

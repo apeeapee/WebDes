@@ -11,6 +11,7 @@ Route::get('/profil', [VillageController::class, 'profil'])->name('profil');
 Route::get('/kesehatan', [VillageController::class, 'kesehatan'])->name('kesehatan');
 Route::get('/agribisnis', [VillageController::class, 'agribisnis'])->name('agribisnis');
 Route::get('/keuangan', [VillageController::class, 'keuangan'])->name('keuangan');
+Route::get('/desa-antikorupsi', [VillageController::class, 'desaAntikorupsi'])->name('desa-antikorupsi');
 Route::get('/umkm', [VillageController::class, 'umkm'])->name('umkm');
 Route::get('/edukasi-5s', [VillageController::class, 'edukasi5s'])->name('edukasi5s');
 Route::post('/kesehatan/skrining', [VillageController::class, 'storeSkrining'])->name('kesehatan.store');
@@ -76,6 +77,12 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/apbdes', [AdminController::class, 'apbdesStore'])->name('admin.apbdes.store');
     Route::put('/admin/apbdes/{id}', [AdminController::class, 'apbdesUpdate'])->name('admin.apbdes.update');
     Route::delete('/admin/apbdes/{id}', [AdminController::class, 'apbdesDestroy'])->name('admin.apbdes.destroy');
+
+    // Desa Antikorupsi CRUD
+    Route::get('/admin/antikorupsi', [AdminController::class, 'antikorupsiIndex'])->name('admin.antikorupsi.index');
+    Route::post('/admin/antikorupsi', [AdminController::class, 'antikorupsiStore'])->name('admin.antikorupsi.store');
+    Route::put('/admin/antikorupsi/{id}', [AdminController::class, 'antikorupsiUpdate'])->name('admin.antikorupsi.update');
+    Route::delete('/admin/antikorupsi/{id}', [AdminController::class, 'antikorupsiDestroy'])->name('admin.antikorupsi.destroy');
 });
 
 

@@ -155,6 +155,11 @@
                             <i data-lucide="pie-chart" class="h-3.5 w-3.5"></i>
                             <span>Anggaran APBDes</span>
                         </a>
+                        <a href="{{ route('admin.antikorupsi.index') }}"
+                            class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all {{ request()->routeIs('admin.antikorupsi.*') ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-200/40 hover:text-slate-900' }}">
+                            <i data-lucide="shield-check" class="h-3.5 w-3.5 text-emerald-500"></i>
+                            <span>Desa Antikorupsi</span>
+                        </a>
                     </div>
                 </div>
 
@@ -255,6 +260,11 @@
                         class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all {{ request()->routeIs('admin.apbdes.*') ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200/50' }}">
                         <i data-lucide="pie-chart" class="h-4 w-4"></i>
                         <span>Anggaran APBDes</span>
+                    </a>
+                    <a href="{{ route('admin.antikorupsi.index') }}" @click="mobileSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all {{ request()->routeIs('admin.antikorupsi.*') ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-200/50' }}">
+                        <i data-lucide="shield-check" class="h-4 w-4 text-emerald-500"></i>
+                        <span>Desa Antikorupsi</span>
                     </a>
                     <div class="h-px bg-slate-200 my-2"></div>
                     <a href="{{ route('admin.umkm.index') }}" @click="mobileSidebarOpen = false"

@@ -82,12 +82,12 @@
 
         <div class="rounded-xl bg-white p-5 border border-slate-100 shadow-sm flex items-center justify-between">
             <div>
-                <span class="text-[10px] text-slate-400 font-bold uppercase block">Komoditas Utama</span>
-                <strong class="text-lg font-extrabold text-slate-800 mt-1 block">{{ $stats['total_komoditas'] }} Varian</strong>
+                <span class="text-[10px] text-slate-400 font-bold uppercase block">Desa Antikorupsi</span>
+                <strong class="text-lg font-extrabold text-emerald-700 mt-1 block">{{ $stats['total_antikorupsi'] ?? 0 }} Drive</strong>
             </div>
-            <div class="h-9 w-9 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center">
-                <i data-lucide="sprout" class="h-4.5 w-4.5"></i>
-            </div>
+            <a href="{{ route('admin.antikorupsi.index') }}" class="h-9 w-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors" title="Kelola Desa Antikorupsi">
+                <i data-lucide="shield-check" class="h-4.5 w-4.5"></i>
+            </a>
         </div>
     </div>
 

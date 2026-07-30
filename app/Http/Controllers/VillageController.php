@@ -13,6 +13,7 @@ use App\Models\Regulasi;
 use App\Models\Umkm;
 use App\Models\Apbdes;
 use App\Models\AgribisnisStat;
+use App\Models\DesaAntikorupsi;
 
 class VillageController extends Controller
 {
@@ -145,10 +146,52 @@ class VillageController extends Controller
             'belanja' => $belanja
         ];
 
-        // Fetch regulasi from database
+        // Fetch regulasi and antikorupsi from database
         $regulasi = Regulasi::orderBy('id', 'desc')->get();
+        $antikorupsiDocs = DesaAntikorupsi::orderBy('id', 'asc')->get();
 
-        return view('keuangan', compact('apbdes', 'regulasi'));
+        return view('keuangan', compact('apbdes', 'regulasi', 'antikorupsiDocs'));
+    }
+
+    // Portal Desa Antikorupsi (5 Pilar Indikator KPK & CRUD Regulasi Drive)
+    public function desaAntikorupsi()
+    {
+        $antikorupsi = DesaAntikorupsi::orderBy('id', 'asc')->get();
+
+        $pilarKpk = [
+            [
+                'kunci' => 'Penguatan Tata Laksana',
+                'deskripsi' => 'Pengelolaan administrasi desa yang tertib, SOP Pengadaan Barang/Jasa transparan, dan pencegahan gratifikasi/pungli.',
+                'icon' => 'file-text',
+                'warna' => 'emerald'
+            ],
+            [
+                'kunci' => 'Penguatan Pengawasan',
+                'deskripsi' => 'Pengawasan efektif BPD, partisipasi pengawasan warga, dan tersedianya Sistem Pengaduan Masyarakat (Whistleblowing).',
+                'icon' => 'shield-alert',
+                'warna' => 'sky'
+            ],
+            [
+                'kunci' => 'Penguatan Pelayanan Publik',
+                'deskripsi' => 'Kepastian standar pelayanan administrasi kependudukan tanpa biaya (Rp 0) serta penanganan keluhan warga yang cepat.',
+                'icon' => 'users',
+                'warna' => 'indigo'
+            ],
+            [
+                'kunci' => 'Penguatan Partisipasi Publik',
+                'deskripsi' => 'Keterbukaan informasi Musbangdes/Musdes, infografis APBDes di ruang publik, serta kemudahan akses dokumen publik.',
+                'icon' => 'eye',
+                'warna' => 'purple'
+            ],
+            [
+                'kunci' => 'Budaya Antikorupsi',
+                'deskripsi' => 'Penanaman nilai integritas kejujuran, pembiasaan kearifan lokal bersih dari korupsi, serta edukasi antikorupsi warga.',
+                'icon' => 'heart-handshake',
+                'warna' => 'amber'
+            ]
+        ];
+
+        return view('desa-antikorupsi', compact('antikorupsi', 'pilarKpk'));
     }
 
     // POST endpoint for new regulation

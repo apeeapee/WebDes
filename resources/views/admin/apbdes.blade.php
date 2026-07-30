@@ -109,7 +109,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rincian Anggaran (Sumber / Bidang)</label>
-                        <input type="text" name="rincian" required placeholder="Contoh: Dana Desa (APBN) atau Bidang Pembangunan" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
+                        <input type="text" name="rincian" required placeholder="Contoh: Alokasi Dana Desa (ADD), Dana Desa (DD), Pajak Bagi Hasil (PBH), Bankeu, atau PADes" class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
