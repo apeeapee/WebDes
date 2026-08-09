@@ -4,27 +4,21 @@ ini_set('display_errors', 1);
 ini_set('max_execution_time', 600);
 set_time_limit(600);
 
-// Force debug mode for this setup script
-putenv('APP_DEBUG=true');
-$_ENV['APP_DEBUG'] = 'true';
-$_SERVER['APP_DEBUG'] = 'true';
-
 $results = [];
 $results['php'] = phpversion();
 
 // 1. Load Laravel
 try {
     require __DIR__ . '/../vendor/autoload.php';
+    
+    // Force debug mode via env before bootstrap
+    putenv('APP_DEBUG=true');
+    $_ENV['APP_DEBUG'] = 'true';
+    $_SERVER['APP_DEBUG'] = 'true';
+    
     $app = require_once __DIR__ . '/../bootstrap/app.php';
-    
-    // Force debug mode in config
-    $app['config']->set('app.debug', true);
-    
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
     $kernel->bootstrap();
-    
-    // Force debug mode again after bootstrap
-    config(['app.debug' => true]);
     
     $results['laravel'] = true;
 } catch (\Throwable $e) {
@@ -53,12 +47,12 @@ if (!empty($results['db'])) {
     $results['storage'] = true;
 }
 
-// 4. Migration
+// 4. Migration (using Migrator directly)
 if (!empty($results['db'])) {
     try {
-        // Use the migrator directly to avoid exception handler issues
         $migrator = $app->make('migrator');
-        $migrator->setOutput(new \Symfony\Component\Console\Output\BufferedOutput());
+        $output = new \Symfony\Component\Console\Output\BufferedOutput();
+        $migrator->setOutput($output);
         
         if (!$migrator->repositoryExists()) {
             $app->make('migration.repository')->createRepository();
@@ -66,11 +60,11 @@ if (!empty($results['db'])) {
         
         $migrator->run(database_path('migrations'));
         $results['migrate'] = true;
-        $results['migrate_output'] = $migrator->getOutput()->fetch();
+        $results['migrate_output'] = $output->fetch();
     } catch (\Throwable $e) {
         $results['migrate'] = false;
         $results['migrate_error'] = $e->getMessage();
-        $results['migrate_file'] = basename($e->getFile()) . ':' . $e->getLine();
+        $results['migrate_detail'] = basename($e->getFile()) . ':' . $e->getLine();
     }
 }
 
@@ -87,7 +81,6 @@ if (!empty($results['migrate'])) {
 }
 
 // ========== OUTPUT ==========
-header('Content-Type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>
 <html><head><title>Setup Desa Banyuurip</title></head>
@@ -99,14 +92,14 @@ header('Content-Type: text/html; charset=UTF-8');
 <?php if (!empty($results['laravel'])): ?>
     <p style="color:#16a34a;">✅ Laravel berhasil dimuat!</p>
 <?php else: ?>
-    <p style="color:#dc2626;">❌ Laravel Error: <?= htmlspecialchars($results['laravel_error'] ?? 'Unknown') ?></p>
+    <p style="color:#dc2626;">❌ Laravel Error: <?= htmlspecialchars($results['laravel_error'] ?? '') ?></p>
 <?php endif; ?>
 
 <?php if (isset($results['db'])): ?>
     <?php if ($results['db']): ?>
         <p style="color:#16a34a;">✅ Database terhubung!</p>
     <?php else: ?>
-        <p style="color:#dc2626;">❌ DB Error: <?= htmlspecialchars($results['db_error'] ?? 'Unknown') ?></p>
+        <p style="color:#dc2626;">❌ DB Error: <?= htmlspecialchars($results['db_error'] ?? '') ?></p>
     <?php endif; ?>
 <?php endif; ?>
 
@@ -121,8 +114,8 @@ header('Content-Type: text/html; charset=UTF-8');
             <pre style="background:#f8fafc;padding:12px;border-radius:8px;font-size:11px;border:1px solid #e2e8f0;overflow:auto;max-height:200px;"><?= htmlspecialchars($results['migrate_output']) ?></pre>
         <?php endif; ?>
     <?php else: ?>
-        <p style="color:#dc2626;">❌ Migration Error: <?= htmlspecialchars($results['migrate_error'] ?? 'Unknown') ?></p>
-        <p style="color:#94a3b8;font-size:11px;"><?= htmlspecialchars($results['migrate_file'] ?? '') ?></p>
+        <p style="color:#dc2626;">❌ Migration Error: <?= htmlspecialchars($results['migrate_error'] ?? '') ?></p>
+        <p style="color:#94a3b8;font-size:11px;"><?= htmlspecialchars($results['migrate_detail'] ?? '') ?></p>
     <?php endif; ?>
 <?php endif; ?>
 
@@ -130,7 +123,7 @@ header('Content-Type: text/html; charset=UTF-8');
     <?php if ($results['seed']): ?>
         <p style="color:#16a34a;">✅ Data desa berhasil dimasukkan!</p>
     <?php else: ?>
-        <p style="color:#dc2626;">❌ Seeder Error: <?= htmlspecialchars($results['seed_error'] ?? 'Unknown') ?></p>
+        <p style="color:#dc2626;">❌ Seeder Error: <?= htmlspecialchars($results['seed_error'] ?? '') ?></p>
     <?php endif; ?>
 <?php endif; ?>
 
