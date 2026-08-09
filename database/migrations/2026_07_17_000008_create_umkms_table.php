@@ -14,16 +14,16 @@ return new class extends Migration
             $table->string('pemilik');
             $table->string('kategori');
             $table->string('kontak');
-            $table->text('alamat');
-            $table->text('deskripsi');
+            $table->text('alamat')->nullable();
+            $table->text('deskripsi')->nullable();
             
             // Financial fields
-            $table->string('omzet_bulanan'); // e.g. "Rp 4.500.000"
-            $table->string('biaya_produksi'); // e.g. "Rp 2.100.000"
-            $table->string('laba_bersih');    // e.g. "Rp 2.400.000"
-            $table->string('pencatatan');     // e.g. "Buku Kas Sederhana"
+            $table->string('omzet_bulanan')->nullable();
+            $table->string('biaya_produksi')->nullable();
+            $table->string('laba_bersih')->nullable();
+            $table->string('pencatatan')->nullable();
             
-            $table->json('produk'); // array of products
+            $table->json('produk')->nullable();
             $table->timestamps();
         });
     }

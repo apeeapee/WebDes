@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE umkms ALTER COLUMN alamat DROP NOT NULL;');
-        DB::statement('ALTER TABLE umkms ALTER COLUMN pencatatan DROP NOT NULL;');
-        DB::statement('ALTER TABLE umkms ALTER COLUMN omzet_bulanan DROP NOT NULL;');
-        DB::statement('ALTER TABLE umkms ALTER COLUMN biaya_produksi DROP NOT NULL;');
-        DB::statement('ALTER TABLE umkms ALTER COLUMN laba_bersih DROP NOT NULL;');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE umkms ALTER COLUMN alamat DROP NOT NULL;');
+            DB::statement('ALTER TABLE umkms ALTER COLUMN pencatatan DROP NOT NULL;');
+            DB::statement('ALTER TABLE umkms ALTER COLUMN omzet_bulanan DROP NOT NULL;');
+            DB::statement('ALTER TABLE umkms ALTER COLUMN biaya_produksi DROP NOT NULL;');
+            DB::statement('ALTER TABLE umkms ALTER COLUMN laba_bersih DROP NOT NULL;');
+        }
     }
 
     /**
@@ -23,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE umkms ALTER COLUMN alamat SET NOT NULL;');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE umkms ALTER COLUMN alamat SET NOT NULL;');
+        }
     }
 };
