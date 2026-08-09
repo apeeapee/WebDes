@@ -47,8 +47,8 @@ export default function Home({ stats, berita }) {
                         Banyuurip <span class="text-gradient-cyan">Digital Gateway</span>
                     </h1>
                     
-                    <p class="mt-6 text-lg text-sky-100/90 max-w-2xl leading-relaxed">
-                        Portal digital terpadu berbasis air murni (*Banyu*) untuk tata kelola administrasi desa, potensi agribisnis, transparansi APBDes, direktori UMKM, serta pelayanan kesehatan mandiri Desa Banyuurip, Boyolali.
+                    <p class="mt-6 text-lg text-sky-100/90 max-w-3xl leading-relaxed">
+                        Pusat digitalisasi profil desa, transparansi tata kelola pemerintahan, potensi pertanian agribisnis, direktori UMKM, serta pelayanan kesehatan masyarakat satu pintu.
                     </p>
                     
                     <div class="mt-10 flex flex-wrap justify-center gap-4">

@@ -18,7 +18,7 @@ import {
     Phone 
 } from 'lucide-react';
 
-export default function Agribisnis({ stats, luas_lahan_breakdown, kelompok_tani, inventaris_balai_desa, sop_peminjaman }) {
+export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kelompok_tani, inventaris_balai_desa, sop_peminjaman }) {
     const [selectedCat, setSelectedCat] = useState('Semua');
 
     const categories = ['Semua', 'Peralatan Acara & Hajatan', 'Alat Pertanian Komunal', 'Mesin & Konstruksi'];
@@ -160,6 +160,66 @@ export default function Agribisnis({ stats, luas_lahan_breakdown, kelompok_tani,
                     </div>
                 </div>
 
+                {/* 2.5 Komoditas Utama Pertanian & Peternakan Desa */}
+                <div class="border-t border-sky-100 pt-20">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full border border-sky-200">
+                            Potensi Unggulan
+                        </span>
+                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Komoditas Utama Desa Banyuurip</h2>
+                        <p class="mt-4 text-slate-600 text-sm">
+                            Hasil komoditas sektor tanaman pangan, hortikultura, dan peternakan utama yang dikelola oleh masyarakat Desa Banyuurip.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {(komoditas || []).length > 0 ? (
+                            (komoditas || []).map((item) => (
+                                <div key={item.id} class="rounded-3xl bg-white p-7 border border-sky-100 shadow-sm banyu-hover-card flex flex-col justify-between">
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class={`inline-block text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full border ${
+                                                item.tipe === 'peternakan' 
+                                                    ? 'text-amber-800 bg-amber-50 border-amber-200' 
+                                                    : 'text-emerald-800 bg-emerald-50 border-emerald-200'
+                                            }`}>
+                                                {item.tipe === 'peternakan' ? 'Peternakan' : 'Tanaman Pangan'}
+                                            </span>
+                                            {item.jenis && (
+                                                <span class="text-xs font-bold text-slate-400">{item.jenis}</span>
+                                            )}
+                                        </div>
+
+                                        <h3 class="text-xl font-extrabold text-slate-900 leading-snug">{item.nama}</h3>
+
+                                        <div class="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-1.5 text-xs">
+                                            <div class="flex items-center justify-between font-bold">
+                                                <span class="text-slate-500">Luas / Populasi:</span>
+                                                <span class="text-sky-800 font-extrabold">{item.luas_atau_jumlah}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between font-bold border-t border-sky-100 pt-1.5">
+                                                <span class="text-slate-500">Estimasi Hasil:</span>
+                                                <span class="text-emerald-800 font-extrabold">{item.hasil}</span>
+                                            </div>
+                                        </div>
+
+                                        {item.deskripsi && (
+                                            <p class="text-xs text-slate-600 leading-relaxed pt-1">
+                                                {item.deskripsi}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div class="col-span-full p-8 text-center text-slate-400 bg-white rounded-3xl border border-sky-100">
+                                <Sprout class="h-10 w-10 mx-auto mb-2 opacity-50 text-sky-600" />
+                                <p class="text-xs font-bold">Belum ada komoditas utama yang diinputkan</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* 3. Daftar 9 Kelompok Tani Desa Banyuurip */}
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
@@ -193,7 +253,7 @@ export default function Agribisnis({ stats, luas_lahan_breakdown, kelompok_tani,
                     </div>
                 </div>
 
-                {/* 4. Katalog Inventaris & Aset Balai Desa Banyuurip (Matching User Design) */}
+                {/* 4. Katalog Inventaris & Aset Balai Desa Banyuurip (Synchronized with Admin Database) */}
                 <div class="border-t border-sky-100 pt-20">
                     <div class="rounded-3xl bg-white p-8 sm:p-10 shadow-sm border border-sky-100 mb-12 banyu-hover-card">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -203,102 +263,94 @@ export default function Agribisnis({ stats, luas_lahan_breakdown, kelompok_tani,
                                 </span>
                                 <h2 class="text-3xl font-extrabold text-slate-900 leading-tight">Daftar Barang & Aset Balai Desa Banyuurip</h2>
                                 <p class="text-xs text-slate-500 mt-2">
-                                    Pilih barang inventaris desa yang tersedia untuk acara hajatan, kerja bakti, atau pengairan pertanian.
+                                    Pilih barang inventaris desa yang tersedia untuk acara hajatan, kegiatan masyarakat, atau pengairan pertanian.
                                 </p>
-                            </div>
-
-                            {/* Category Filter Buttons */}
-                            <div class="flex flex-wrap gap-2">
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => setSelectedCat(cat)}
-                                        class={`px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all cursor-pointer ${
-                                            selectedCat === cat 
-                                                ? 'bg-slate-900 text-white shadow-md' 
-                                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
                             </div>
                         </div>
                     </div>
 
                     {/* Inventory Items Cards */}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {filteredInventaris.map((item) => (
-                            <div key={item.id} class="rounded-3xl bg-white p-7 border border-sky-100 shadow-sm banyu-hover-card flex flex-col justify-between">
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                                            {item.kategori}
-                                        </span>
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                                            {item.status}
-                                        </span>
-                                    </div>
+                        {(inventaris_balai_desa || []).length > 0 ? (
+                            (inventaris_balai_desa || []).map((item) => (
+                                <div key={item.id} class="rounded-3xl bg-white p-7 border border-sky-100 shadow-sm banyu-hover-card flex flex-col justify-between">
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+                                                Aset Balai Desa
+                                            </span>
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                                Tersedia
+                                            </span>
+                                        </div>
 
-                                    <h3 class="text-lg font-extrabold text-slate-900 leading-snug">{item.nama}</h3>
+                                        <h3 class="text-lg font-extrabold text-slate-900 leading-snug">{item.nama}</h3>
 
-                                    <div class="space-y-3 pt-2">
-                                        <div class="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-2 text-xs">
-                                            <div class="flex items-start gap-2">
-                                                <Box class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
-                                                <div>
-                                                    <span class="text-[10px] font-bold text-slate-400 uppercase block">KAPASITAS / JUMLAH UNIT:</span>
-                                                    <strong class="text-slate-900 font-bold block mt-0.5">{item.kapasitas}</strong>
+                                        <div class="space-y-3 pt-2">
+                                            <div class="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-100 space-y-2.5 text-xs">
+                                                <div class="flex items-start gap-2">
+                                                    <Box class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">KAPASITAS / JUMLAH TERSEDIA:</span>
+                                                        <strong class="text-slate-900 font-bold block mt-0.5">{item.kapasitas}</strong>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="flex items-start gap-2 pt-2 border-t border-sky-100">
-                                                <MapPin class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
-                                                <div>
-                                                    <span class="text-[10px] font-bold text-slate-400 uppercase block">LOKASI PENYIMPANAN:</span>
-                                                    <span class="text-slate-700 font-semibold block mt-0.5">{item.lokasi}</span>
+                                                <div class="flex items-start gap-2 pt-2 border-t border-sky-100">
+                                                    <FileText class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">PERUNTUKAN / KONDISI ASET:</span>
+                                                        <span class="text-slate-700 font-semibold block mt-0.5">{item.fungsi}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="flex items-start gap-2 pt-2 border-t border-sky-100">
-                                                <FileText class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
-                                                <div>
-                                                    <span class="text-[10px] font-bold text-slate-400 uppercase block">SYARAT PEMINJAMAN:</span>
-                                                    <span class="text-slate-700 font-semibold block mt-0.5">{item.syarat}</span>
+                                                <div class="flex items-start gap-2 pt-2 border-t border-sky-100">
+                                                    <Users class="h-4 w-4 text-sky-600 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">PENANGGUNG JAWAB / PENGELOLA:</span>
+                                                        <span class="text-slate-700 font-semibold block mt-0.5">{item.pengelola}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="mt-6 border-t border-sky-100 pt-4 flex items-center justify-between">
-                                    <span class="text-[11px] font-semibold text-slate-500 truncate max-w-[170px]" title={item.pj}>
-                                        {item.pj}
-                                    </span>
+                                    <div class="mt-6 border-t border-sky-100 pt-4 flex items-center justify-between">
+                                        <span class="text-[11px] font-semibold text-slate-500 truncate max-w-[170px]" title={item.pengelola}>
+                                            {item.pengelola}
+                                        </span>
 
-                                    <a
-                                        href={`https://wa.me/6281327349963?text=Halo%20Admin%20Balai%20Desa%20Banyuurip,%20saya%20ingin%20mengajukan%20peminjaman%20aset:%20${encodeURIComponent(item.nama)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold shadow-md hover:scale-105 transition-all"
-                                    >
-                                        <Send class="h-3.5 w-3.5" />
-                                        <span>Ajukan Pinjam</span>
-                                    </a>
+                                        <a
+                                            href={`https://wa.me/6281372448450?text=Halo%20Kaur%20Umum%20(Pengelola%20Aset%20Desa),%20saya%20ingin%20mengajukan%20peminjaman%20aset:%20${encodeURIComponent(item.nama)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold shadow-md hover:scale-105 transition-all"
+                                        >
+                                            <Send class="h-3.5 w-3.5" />
+                                            <span>Ajukan Pinjam</span>
+                                        </a>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div class="col-span-full p-8 text-center text-slate-400 bg-white rounded-3xl border border-sky-100">
+                                <Box class="h-10 w-10 mx-auto mb-2 opacity-50 text-sky-600" />
+                                <p class="text-xs font-bold">Belum ada inventaris aset balai desa yang terdaftar</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
-                {/* 5. SOP Peminjaman Balai Desa & Aset Inventaris */}
+                {/* 5. SOP Alur Peminjaman Balai Desa & Narahubung */}
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
-                        <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3 py-1 rounded-full border border-sky-200">Standar Operasional Prosedur</span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">SOP Peminjaman Aset & Balai Desa</h2>
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full border border-sky-200">
+                            Prosedur Resmi
+                        </span>
+                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Alur Peminjaman Aset Desa</h2>
                         <p class="mt-4 text-slate-600 text-sm">
-                            Tata cara resmi peminjaman gedung Balai Desa, fasilitas panggung hajatan, sound system, serta Alsintan pertanian.
+                            Tata cara peminjaman aula balai desa, bangku, sound system, mesin pemotong rumput, alat musik, hingga mobil siaga desa.
                         </p>
                     </div>
 
@@ -316,26 +368,47 @@ export default function Agribisnis({ stats, luas_lahan_breakdown, kelompok_tani,
                         ))}
                     </div>
 
-                    <div class="mt-12 p-6 rounded-3xl bg-gradient-to-r from-sky-900 to-blue-900 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-300 border border-sky-400/30 shrink-0">
-                                <Info class="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h4 class="font-extrabold text-base text-white">Butuh bantuan pengajuan peminjaman gedung/barang?</h4>
-                                <p class="text-xs text-sky-200 mt-0.5">Hubungi Kaur Umum Balai Desa (Pak Bambang) melalui WhatsApp resmi desa.</p>
+                    {/* Catatan Box & Narahubung */}
+                    <div class="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                        <div class="lg:col-span-6 rounded-3xl bg-emerald-50/80 p-6 border border-emerald-200 shadow-sm space-y-3">
+                            <h4 class="text-xs font-extrabold text-emerald-900 uppercase tracking-wider flex items-center gap-2">
+                                <ShieldCheck class="h-4 w-4 text-emerald-600" />
+                                Catatan Peminjaman Aset Desa
+                            </h4>
+                            <div class="space-y-2 text-xs font-bold text-emerald-800">
+                                <div class="flex items-center gap-2 bg-white/80 p-3 rounded-2xl border border-emerald-100">
+                                    <span class="text-base">✅</span>
+                                    <span>Tidak dipungut biaya sewa (Gratis untuk warga desa).</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/80 p-3 rounded-2xl border border-emerald-100">
+                                    <span class="text-base">✅</span>
+                                    <span>Menjaga kondisi aset merupakan tanggung jawab peminjam.</span>
+                                </div>
                             </div>
                         </div>
 
-                        <a 
-                            href="https://wa.me/6281327349963?text=Halo%20Kaur%20Umum%20Balai%20Desa%20Banyuurip,%20saya%20ingin%20konsultasi%20peminjaman%20gedung/inventaris" 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            class="px-6 py-3 rounded-2xl bg-white text-slate-900 text-xs font-extrabold hover:bg-sky-50 transition-all shadow-md shrink-0 hover:scale-105 flex items-center gap-2"
-                        >
-                            <Phone class="h-4 w-4 text-emerald-600" />
-                            <span>Hubungi Kaur Umum</span>
-                        </a>
+                        <div class="lg:col-span-6 rounded-3xl bg-gradient-to-r from-slate-900 via-sky-950 to-blue-950 p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 border border-sky-400/30">
+                            <div class="flex items-center gap-4">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0">
+                                    <Phone class="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-sky-300 block">Narahubung Peminjaman Aset</span>
+                                    <h4 class="font-extrabold text-lg text-white mt-0.5">Kaur Umum</h4>
+                                    <p class="text-xs text-sky-200">+62 813-7244-8450 (Penjaga / Pengelola Aset Desa)</p>
+                                </div>
+                            </div>
+
+                            <a 
+                                href="https://wa.me/6281372448450?text=Halo%20Kaur%20Umum%20Balai%20Desa,%20saya%20ingin%20mengajukan%20peminjaman%20aset%20desa" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition-all shadow-md shrink-0 hover:scale-105 flex items-center gap-2"
+                            >
+                                <Send class="h-4 w-4" />
+                                <span>Hubungi Kaur Umum</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 

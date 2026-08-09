@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { PlusCircle, Edit3, Trash2, X, Inbox, User, Users, AlertCircle } from 'lucide-react';
+import { PlusCircle, Edit3, Trash2, X, Inbox, User, Users, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
 
 export default function Perangkat({ items }) {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -12,6 +12,7 @@ export default function Perangkat({ items }) {
         nama: '',
         jabatan: '',
         kontak: '',
+        urutan: (items.length + 1) || 1,
         foto: null,
     });
 
@@ -19,6 +20,7 @@ export default function Perangkat({ items }) {
         nama: '',
         jabatan: '',
         kontak: '',
+        urutan: 1,
         foto: null,
         oldFoto: '',
     });
@@ -41,6 +43,7 @@ export default function Perangkat({ items }) {
             nama: item.nama || '',
             jabatan: item.jabatan || '',
             kontak: item.kontak || '',
+            urutan: item.urutan || 1,
             foto: null,
             oldFoto: item.foto || '',
         });
@@ -54,6 +57,7 @@ export default function Perangkat({ items }) {
             nama: editForm.data.nama,
             jabatan: editForm.data.jabatan,
             kontak: editForm.data.kontak,
+            urutan: editForm.data.urutan,
             foto: editForm.data.foto,
         }, {
             forceFormData: true,
@@ -62,6 +66,10 @@ export default function Perangkat({ items }) {
                 editForm.reset();
             }
         });
+    };
+
+    const handleReorder = (id, direction) => {
+        router.post(`/admin/perangkat/${id}/reorder`, { direction });
     };
 
     const handleDelete = (id) => {
@@ -82,7 +90,7 @@ export default function Perangkat({ items }) {
     };
 
     return (
-        <AdminLayout title="Kelola Perangkat Desa" subtitle="Kelola aparatur pemerintahan desa beserta foto resmi yang tampil di halaman profil desa">
+        <AdminLayout title="Kelola Perangkat Desa" subtitle="Kelola aparatur pemerintahan desa, foto resmi, serta urutan posisi tampil di profil desa">
             <Head title="Admin - Perangkat Desa" />
 
             <div class="space-y-6">
@@ -93,13 +101,14 @@ export default function Perangkat({ items }) {
                         </div>
                         <div>
                             <h3 class="text-sm font-bold text-slate-900">Struktur Perangkat Desa</h3>
-                            <p class="text-xs text-slate-500">Total {items.length} Aparatur Desa Terdaftar</p>
+                            <p class="text-xs text-slate-500">Total {items.length} Aparatur Desa Terdaftar • Posisi Teratas Tampil Paling Awal</p>
                         </div>
                     </div>
 
                     <button 
                         onClick={() => {
                             addForm.clearErrors();
+                            addForm.setData('urutan', (items.length + 1) || 1);
                             setShowAddModal(true);
                         }} 
                         class="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold py-2.5 px-4 shadow-xs transition-all cursor-pointer"
@@ -114,6 +123,7 @@ export default function Perangkat({ items }) {
                         <table class="w-full text-left text-sm text-slate-500">
                             <thead class="bg-slate-50 text-xs font-bold text-slate-700 uppercase border-b border-slate-200/60">
                                 <tr>
+                                    <th scope="col" class="px-4 py-3.5 text-center">Urutan</th>
                                     <th scope="col" class="px-6 py-3.5">Foto & Nama Perangkat</th>
                                     <th scope="col" class="px-6 py-3.5">Jabatan Resmi</th>
                                     <th scope="col" class="px-6 py-3.5">Kontak WA</th>
@@ -122,8 +132,33 @@ export default function Perangkat({ items }) {
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 {items.length > 0 ? (
-                                    items.map((item) => (
+                                    items.map((item, idx) => (
                                         <tr key={item.id} class="hover:bg-slate-50/50 transition-colors">
+                                            {/* Column Urutan + Quick Arrow Reorder */}
+                                            <td class="px-4 py-4 text-center whitespace-nowrap">
+                                                <div class="inline-flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">
+                                                    <span class="text-xs font-extrabold text-slate-900 w-5 text-center">{item.urutan || idx + 1}</span>
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <button 
+                                                            disabled={idx === 0}
+                                                            onClick={() => handleReorder(item.id, 'up')}
+                                                            class="p-0.5 rounded hover:bg-slate-200 text-slate-600 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                                                            title="Naikkan Urutan Tampil"
+                                                        >
+                                                            <ArrowUp class="h-3 w-3" />
+                                                        </button>
+                                                        <button 
+                                                            disabled={idx === items.length - 1}
+                                                            onClick={() => handleReorder(item.id, 'down')}
+                                                            class="p-0.5 rounded hover:bg-slate-200 text-slate-600 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                                                            title="Turunkan Urutan Tampil"
+                                                        >
+                                                            <ArrowDown class="h-3 w-3" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+
                                             <td class="px-6 py-4 font-bold text-slate-900 whitespace-nowrap">
                                                 <div class="flex items-center gap-3">
                                                     <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200 shadow-xs">
@@ -160,7 +195,7 @@ export default function Perangkat({ items }) {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="4" class="px-6 py-8 text-center text-slate-400 font-medium">
+                                        <td colSpan="5" class="px-6 py-8 text-center text-slate-400 font-medium">
                                             <Inbox class="h-8 w-8 mx-auto mb-2 opacity-50" />
                                             Belum ada aparatur desa terdaftar
                                         </td>
@@ -186,21 +221,35 @@ export default function Perangkat({ items }) {
                             </div>
 
                             <form onSubmit={handleAddSubmit} class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap & Gelar</label>
-                                    <input 
-                                        type="text" 
-                                        value={addForm.data.nama}
-                                        onChange={(e) => addForm.setData('nama', e.target.value)}
-                                        required 
-                                        placeholder="Contoh: Sudarsono, S.IP" 
-                                        class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
-                                    />
-                                    {addForm.errors.nama && (
-                                        <p class="text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1">
-                                            <AlertCircle class="h-3.5 w-3.5" /> {addForm.errors.nama}
-                                        </p>
-                                    )}
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap & Gelar</label>
+                                        <input 
+                                            type="text" 
+                                            value={addForm.data.nama}
+                                            onChange={(e) => addForm.setData('nama', e.target.value)}
+                                            required 
+                                            placeholder="Contoh: Sudarsono, S.IP" 
+                                            class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
+                                        />
+                                        {addForm.errors.nama && (
+                                            <p class="text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1">
+                                                <AlertCircle class="h-3.5 w-3.5" /> {addForm.errors.nama}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Urutan Posisi</label>
+                                        <input 
+                                            type="number" 
+                                            min="1"
+                                            value={addForm.data.urutan}
+                                            onChange={(e) => addForm.setData('urutan', e.target.value)}
+                                            required 
+                                            placeholder="Urutan 1, 2..." 
+                                            class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 text-center font-bold" 
+                                        />
+                                    </div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
@@ -211,7 +260,7 @@ export default function Perangkat({ items }) {
                                             value={addForm.data.jabatan}
                                             onChange={(e) => addForm.setData('jabatan', e.target.value)}
                                             required 
-                                            placeholder="Contoh: Kepala Desa, Sekdes, Kasi..." 
+                                            placeholder="Contoh: Kepala Desa, Sekdes..." 
                                             class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
                                         />
                                         {addForm.errors.jabatan && (
@@ -221,7 +270,7 @@ export default function Perangkat({ items }) {
                                         )}
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Kontak WhatsApp</label>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Kontak WA</label>
                                         <input 
                                             type="text" 
                                             value={addForm.data.kontak}
@@ -284,20 +333,33 @@ export default function Perangkat({ items }) {
                             </div>
 
                             <form onSubmit={handleEditSubmit} class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap & Gelar</label>
-                                    <input 
-                                        type="text" 
-                                        value={editForm.data.nama}
-                                        onChange={(e) => editForm.setData('nama', e.target.value)}
-                                        required 
-                                        class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
-                                    />
-                                    {editForm.errors.nama && (
-                                        <p class="text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1">
-                                            <AlertCircle class="h-3.5 w-3.5" /> {editForm.errors.nama}
-                                        </p>
-                                    )}
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap & Gelar</label>
+                                        <input 
+                                            type="text" 
+                                            value={editForm.data.nama}
+                                            onChange={(e) => editForm.setData('nama', e.target.value)}
+                                            required 
+                                            class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
+                                        />
+                                        {editForm.errors.nama && (
+                                            <p class="text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1">
+                                                <AlertCircle class="h-3.5 w-3.5" /> {editForm.errors.nama}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Urutan Posisi</label>
+                                        <input 
+                                            type="number" 
+                                            min="1"
+                                            value={editForm.data.urutan}
+                                            onChange={(e) => editForm.setData('urutan', e.target.value)}
+                                            required 
+                                            class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 text-center font-bold" 
+                                        />
+                                    </div>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
@@ -317,7 +379,7 @@ export default function Perangkat({ items }) {
                                         )}
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Kontak WhatsApp</label>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nomor Kontak WA</label>
                                         <input 
                                             type="text" 
                                             value={editForm.data.kontak}

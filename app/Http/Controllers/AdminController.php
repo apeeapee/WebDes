@@ -174,7 +174,7 @@ class AdminController extends Controller
     // 4. Perangkat Desa CRUD
     public function perangkatIndex()
     {
-        $items = PerangkatDesa::orderBy('id', 'asc')->get();
+        $items = PerangkatDesa::orderBy('urutan', 'asc')->orderBy('id', 'asc')->get();
         return Inertia::render('Admin/Perangkat', compact('items'));
     }
 
@@ -184,13 +184,17 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
+            'urutan' => 'nullable|integer|min:1',
             'foto' => 'nullable',
         ]);
+
+        $maxUrutan = PerangkatDesa::max('urutan') ?? 0;
 
         $perangkatData = [
             'nama' => $data['nama'],
             'jabatan' => $data['jabatan'],
             'kontak' => $data['kontak'],
+            'urutan' => $data['urutan'] ?? ($maxUrutan + 1),
             'foto' => null,
         ];
 
@@ -216,6 +220,7 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
+            'urutan' => 'required|integer|min:1',
             'foto' => 'nullable',
         ]);
 
@@ -223,6 +228,7 @@ class AdminController extends Controller
             'nama' => $data['nama'],
             'jabatan' => $data['jabatan'],
             'kontak' => $data['kontak'],
+            'urutan' => $data['urutan'],
         ];
 
         if ($request->hasFile('foto')) {
@@ -246,6 +252,38 @@ class AdminController extends Controller
 
         $item->update($perangkatData);
         return redirect()->route('admin.perangkat.index')->with('success', 'Perangkat desa berhasil diperbarui!');
+    }
+
+    public function perangkatReorder(Request $request, $id)
+    {
+        $direction = $request->input('direction');
+        $item = PerangkatDesa::findOrFail($id);
+
+        if ($direction === 'up') {
+            $prev = PerangkatDesa::where('urutan', '<', $item->urutan)
+                ->orderBy('urutan', 'desc')
+                ->first();
+            if ($prev) {
+                $temp = $item->urutan;
+                $item->urutan = $prev->urutan;
+                $prev->urutan = $temp;
+                $item->save();
+                $prev->save();
+            }
+        } elseif ($direction === 'down') {
+            $next = PerangkatDesa::where('urutan', '>', $item->urutan)
+                ->orderBy('urutan', 'asc')
+                ->first();
+            if ($next) {
+                $temp = $item->urutan;
+                $item->urutan = $next->urutan;
+                $next->urutan = $temp;
+                $item->save();
+                $next->save();
+            }
+        }
+
+        return redirect()->route('admin.perangkat.index')->with('success', 'Urutan perangkat desa berhasil diubah!');
     }
 
     public function perangkatDestroy($id)

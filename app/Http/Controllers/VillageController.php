@@ -41,7 +41,7 @@ class VillageController extends Controller
     {
         // Fetch sejarah & perangkat from database
         $sejarah = Sejarah::orderBy('tahun', 'asc')->get();
-        $perangkat = PerangkatDesa::orderBy('id', 'asc')->get();
+        $perangkat = PerangkatDesa::orderBy('urutan', 'asc')->orderBy('id', 'asc')->get();
 
         return Inertia::render('Profil', compact('sejarah', 'perangkat'));
     }
@@ -105,6 +105,8 @@ class VillageController extends Controller
     // Agribisnis & Logistik
     public function agribisnis()
     {
+        $komoditas = Komoditas::orderBy('id', 'desc')->get();
+
         $luas_lahan_breakdown = [
             ['jenis' => 'Lahan Sawah (Biasa)', 'luas' => '141,00 Ha'],
             ['jenis' => 'Sawah Irigasi Setengah Teknis', 'luas' => '309,01 Ha'],
@@ -135,68 +137,18 @@ class VillageController extends Controller
             ['nama' => 'Ngudi Rejeki III', 'ketua' => 'Jumanto', 'alamat' => 'Ngeliyangan RT27 RW07', 'anggota' => '54 Orang'],
         ];
 
-        $inventaris_balai_desa = [
-            [
-                'id' => 1,
-                'nama' => 'Tenda Acara & Panggung Portable Balai Desa',
-                'kategori' => 'Peralatan Acara & Hajatan',
-                'status' => 'Tersedia',
-                'kapasitas' => '4 Unit Tenda (6x12m) & Panggung (4x6m)',
-                'lokasi' => 'Gudang Balai Desa Banyuurip',
-                'syarat' => 'KTP Warga Banyuurip & Surat Permohonan H-3 ke Kaur Umum',
-                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
-            ],
-            [
-                'id' => 2,
-                'nama' => 'Sound System Portable Wireless & 4 Microphone',
-                'kategori' => 'Peralatan Acara & Hajatan',
-                'status' => 'Tersedia',
-                'kapasitas' => '2 Set Active Speaker 15 Inch + Mic Wireless',
-                'lokasi' => 'Ruang Inventaris Balai Desa',
-                'syarat' => 'Borang Peminjaman + Menjaga Kebersihan & Keamanan Alat',
-                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
-            ],
-            [
-                'id' => 3,
-                'nama' => 'Hand Tractor Quick G1000 Kubota (Alsintan)',
-                'kategori' => 'Alat Pertanian Komunal',
-                'status' => 'Tersedia',
-                'kapasitas' => '2 Unit Hand Tractor Siap Pakai',
-                'lokasi' => 'Sentra Agribisnis Balai Desa',
-                'syarat' => 'Anggota Poktan / Warga Petani Desa Banyuurip',
-                'pj' => 'Mbah Wagiman (Ketua Poktan Tani Makmur)'
-            ],
-            [
-                'id' => 4,
-                'nama' => 'Pompa Air Irigasi Sawah (Water Pump 3 Inch)',
-                'kategori' => 'Alat Pertanian Komunal',
-                'status' => 'Tersedia',
-                'kapasitas' => '3 Unit Pompa Air Bensin 5.5 HP',
-                'lokasi' => 'Gudang Alsintan Balai Desa',
-                'syarat' => 'Borang Peminjaman & BBM Mandiri',
-                'pj' => 'Pak Darji (Ketua Gapoktan Subur Makmur)'
-            ],
-            [
-                'id' => 5,
-                'nama' => 'Molen Beton & Peralatan Tukang Kerja Bakti',
-                'kategori' => 'Mesin & Konstruksi',
-                'status' => 'Tersedia',
-                'kapasitas' => '1 Unit Molen Beton + 5 Gerobak Dorong',
-                'lokasi' => 'Depo Logistik Balai Desa',
-                'syarat' => 'Koordinasi Ketua RT/RW untuk Kegiatan Kerja Bakti',
-                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
-            ],
-        ];
+        $inventaris_balai_desa = AsetTani::orderBy('id', 'asc')->get();
 
         $sop_peminjaman = [
-            ['langkah' => '1', 'judul' => 'Pengajuan Surat Permohonan H-3', 'deskripsi' => 'Pemohon mengajukan surat permohonan peminjaman ke Kaur Umum Balai Desa minimal H-3 sebelum tanggal pemakaian.'],
-            ['langkah' => '2', 'judul' => 'Verifikasi Jadwal & Fisik Barang', 'deskripsi' => 'Petugas mengecek ketersediaan aset pada tanggal yang diminta serta memeriksa kondisi kelayakan fisik barang.'],
-            ['langkah' => '3', 'judul' => 'Penandatanganan Berita Acara', 'deskripsi' => 'Pemohon menandatangani Borang Peminjaman & Berita Acara Serah Terima Aset disertai jaminan identitas (KTP Warga).'],
-            ['langkah' => '4', 'judul' => 'Penggunaan & Kewajiban Menjaga Aset', 'deskripsi' => 'Pemohon wajib menjaga kebersihan, ketertiban, dan keselamatan barang/fasilitas Balai Desa selama penggunaan.'],
-            ['langkah' => '5', 'judul' => 'Pengembalian & Serah Terima Ulang', 'deskripsi' => 'Aset dikembalikan tepat waktu dalam keadaan bersih dan berfungsi normal untuk dilakukan pengesahan akhir.'],
+            ['langkah' => '1', 'judul' => 'Ajukan Peminjaman', 'deskripsi' => 'Hubungi penjaga/pengelola aset desa (Kaur Umum: +62 813-7244-8450) untuk menyampaikan kebutuhan peminjaman.'],
+            ['langkah' => '2', 'judul' => 'Verifikasi Ketersediaan', 'deskripsi' => 'Pengelola memastikan aset desa yang akan dipinjam dalam kondisi baik & tersedia pada jadwal yang diminta.'],
+            ['langkah' => '3', 'judul' => 'Pengambilan Aset', 'deskripsi' => 'Aset diserahkan kepada peminjam dalam kondisi baik setelah dilakukan pemeriksaan awal.'],
+            ['langkah' => '4', 'judul' => 'Penggunaan Responsible', 'deskripsi' => 'Gunakan aset dengan penuh tanggung jawab sesuai keperluan kegiatan masyarakat.'],
+            ['langkah' => '5', 'judul' => 'Pengembalian & Cek Kondisi', 'deskripsi' => 'Aset dikembalikan kepada pengelola dalam kondisi baik seperti saat dipinjam (dilakukan pengecekan fisik aset).'],
         ];
 
         return Inertia::render('Agribisnis', compact(
+            'komoditas',
             'stats', 
             'luas_lahan_breakdown', 
             'kelompok_tani', 

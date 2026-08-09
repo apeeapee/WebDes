@@ -43,6 +43,7 @@ Route::middleware(['admin'])->group(function () {
     // Perangkat Desa CRUD
     Route::get('/admin/perangkat', [AdminController::class, 'perangkatIndex'])->name('admin.perangkat.index');
     Route::post('/admin/perangkat', [AdminController::class, 'perangkatStore'])->name('admin.perangkat.store');
+    Route::post('/admin/perangkat/{id}/reorder', [AdminController::class, 'perangkatReorder'])->name('admin.perangkat.reorder');
     Route::put('/admin/perangkat/{id}', [AdminController::class, 'perangkatUpdate'])->name('admin.perangkat.update');
     Route::delete('/admin/perangkat/{id}', [AdminController::class, 'perangkatDestroy'])->name('admin.perangkat.destroy');
 
