@@ -2,80 +2,92 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../js/**/*.jsx';
+@source '../js/**/*.js';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     
-    --color-brand-green: #0f766e; /* Emerald 700 */
-    --color-brand-green-light: #14b8a6; /* Teal 500 */
-    --color-brand-blue: #0369a1; /* Sky 700 */
-    --color-brand-blue-light: #38bdf8; /* Sky 400 */
-    --color-brand-dark: #0f172a; /* Slate 900 */
+    --color-banyu-50: #f0f9ff;
+    --color-banyu-100: #e0f2fe;
+    --color-banyu-200: #bae6fd;
+    --color-banyu-300: #7dd3fc;
+    --color-banyu-400: #38bdf8;
+    --color-banyu-500: #0ea5e9;
+    --color-banyu-600: #0284c7;
+    --color-banyu-700: #0369a1;
+    --color-banyu-800: #075985;
+    --color-banyu-900: #0c4a6e;
+    --color-banyu-950: #082f49;
 }
 
-/* Custom Premium Utilities */
-.glass-panel {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+/* Prevent Page Bounce / Overscroll Lift completely */
+html, body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+    background-color: #f0f9ff !important;
 }
 
-.dark .glass-panel {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+/* Glassmorphism Cards & Panels (Static, no motion) */
+.glass-panel-banyu {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(186, 230, 253, 0.4);
 }
 
-.text-gradient-green-blue {
-    background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+.glass-card-dark {
+    background: rgba(12, 74, 110, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+/* Text Gradients */
+.text-gradient-banyu {
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 50%, #2563eb 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.bg-gradient-premium {
-    background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+.text-gradient-cyan {
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.dark .bg-gradient-premium {
-    background: linear-gradient(135deg, #022c22 0%, #082f49 100%);
-}
-
-/* Dynamic Dot Grid Background */
-.bg-dot-grid {
-    background-image: radial-gradient(rgba(15, 118, 110, 0.1) 1px, transparent 1px);
+/* Water Dot Grid Background */
+.bg-banyu-grid {
+    background-image: radial-gradient(rgba(2, 132, 199, 0.12) 1.2px, transparent 1.2px);
     background-size: 24px 24px;
 }
 
-.dark .bg-dot-grid {
-    background-image: radial-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px);
-    background-size: 24px 24px;
+/* Static Cards (No Motion, No Hover Lift) */
+.banyu-hover-card {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hover Zoom Card Animation */
-.card-hover-effect {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.card-hover-effect:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 20px -8px rgba(15, 118, 110, 0.25);
+.banyu-hover-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.1);
+    border-color: rgba(56, 189, 248, 0.5);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #f1f5f9;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 3px;
+    border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
-

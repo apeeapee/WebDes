@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use App\Models\Berita;
 use App\Models\Sejarah;
 use App\Models\PerangkatDesa;
@@ -14,6 +15,7 @@ use App\Models\Umkm;
 use App\Models\Apbdes;
 use App\Models\AgribisnisStat;
 use App\Models\DesaAntikorupsi;
+use App\Models\VillageSetting;
 
 class VillageController extends Controller
 {
@@ -21,17 +23,17 @@ class VillageController extends Controller
     public function home()
     {
         $stats = [
-            'penduduk' => 3420,
-            'kk' => 985,
-            'luas_tani' => '245 Hektar',
+            'penduduk' => (int) VillageSetting::getVal('total_warga', 3420),
+            'kk' => (int) VillageSetting::getVal('kepala_keluarga', 985),
+            'luas_tani' => VillageSetting::getVal('luas_wilayah', '245 Hektar'),
             'umkm' => Umkm::count(),
-            'posyandu' => 5
+            'posyandu' => (int) VillageSetting::getVal('posyandu_aktif', 5)
         ];
 
         // Fetch berita from database
         $berita = Berita::orderBy('id', 'asc')->get();
 
-        return view('home', compact('stats', 'berita'));
+        return Inertia::render('Home', compact('stats', 'berita'));
     }
 
     // Profil Desa
@@ -41,7 +43,7 @@ class VillageController extends Controller
         $sejarah = Sejarah::orderBy('tahun', 'asc')->get();
         $perangkat = PerangkatDesa::orderBy('id', 'asc')->get();
 
-        return view('profil', compact('sejarah', 'perangkat'));
+        return Inertia::render('Profil', compact('sejarah', 'perangkat'));
     }
 
     // Layanan Kesehatan (RESPIRA & Skrining ISPA)
@@ -74,7 +76,7 @@ class VillageController extends Controller
             ]
         ];
 
-        return view('kesehatan', compact('ebook_chapters'));
+        return Inertia::render('Kesehatan', compact('ebook_chapters'));
     }
 
     // Skrining ISPA POST endpoint
@@ -103,57 +105,277 @@ class VillageController extends Controller
     // Agribisnis & Logistik
     public function agribisnis()
     {
-        // Fetch komoditas & aset tani from database
-        $komoditas = Komoditas::orderBy('id', 'asc')->get();
-        $aset_logistik = AsetTani::orderBy('id', 'asc')->get();
-        $stats = AgribisnisStat::first();
-
-        $kalender_tanam = [
-            ['musim' => 'Musim Hujan (Rendengan)', 'bulan' => 'November - Februari', 'kegiatan' => 'Penanaman Padi Utama', 'status' => 'Irigasi lancar, waspada hama wereng.'],
-            ['musim' => 'Musim Pancaroba (Gadu I)', 'bulan' => 'Maret - Juni', 'kegiatan' => 'Penanaman Padi Varietas Genjah / Jagung', 'status' => 'Irigasi bergilir, pembagian air teratur.'],
-            ['musim' => 'Musim Kemarau (Gadu II)', 'bulan' => 'Juli - Oktober', 'kegiatan' => 'Palawija (Jagung, Cabai, Kedelai)', 'status' => 'Hemat air, pemanfaatan sumur pantek pertanian.']
+        $luas_lahan_breakdown = [
+            ['jenis' => 'Lahan Sawah (Biasa)', 'luas' => '141,00 Ha'],
+            ['jenis' => 'Sawah Irigasi Setengah Teknis', 'luas' => '309,01 Ha'],
+            ['jenis' => 'Sawah Tadah Hujan', 'luas' => '65,00 Ha'],
+            ['jenis' => 'Tegal / Kebun', 'luas' => '76,00 Ha'],
+            ['jenis' => 'Pekarangan', 'luas' => '162,22 Ha'],
+            ['jenis' => 'Lain-lain', 'luas' => '113,38 Ha'],
         ];
 
-        $alur_distribusi = [
-            ['langkah' => '1. Panen di Lahan', 'deskripsi' => 'Petani melakukan panen padi, jagung, atau cabai secara bersamaan (gotong royong) sesuai kalender tanam.'],
-            ['langkah' => '2. Pengeringan & Sortasi', 'deskripsi' => 'Hasil panen dijemur di lantai jemur komunal desa dan disortir berdasarkan kualitas standar pasar.'],
-            ['langkah' => '3. Penyimpanan Sementara', 'deskripsi' => 'Sebagian gabah disimpan di Gudang Lumbung Desa untuk ketahanan pangan, sisanya dikemas untuk didistribusikan.'],
-            ['langkah' => '4. Pengangkutan Logistik', 'deskripsi' => 'BUMDes mengoordinasikan armada pikap desa untuk mengangkut komoditas secara terjadwal guna menjaga harga jual tetap stabil.'],
-            ['langkah' => '5. Penjualan & Distribusi Pasar', 'deskripsi' => 'Komoditas dipasarkan ke Pasar Kabupaten Boyolali, Koperasi Susu Lokal, serta pengepul kemitraan desa.']
+        $stats = [
+            'luas_sawah' => '450,01 Ha',
+            'produktivitas_padi' => '6,2 Ton/Ha',
+            'produktivitas_jagung' => '4,5 Ton/Ha',
+            'pola_tanam' => 'Padi → Padi → Jagung / Kacang Tanah',
+            'gapoktan' => 'Subur Makmur (Ketua: Darji)',
+            'sumber' => 'BPP Kecamatan Klego'
         ];
 
-        return view('agribisnis', compact('komoditas', 'kalender_tanam', 'aset_logistik', 'alur_distribusi', 'stats'));
+        $kelompok_tani = [
+            ['nama' => 'Sidomukti I', 'ketua' => 'Sukardi', 'alamat' => 'Tlogosari RT22 RW06', 'anggota' => '85 Orang'],
+            ['nama' => 'Sidomukti II', 'ketua' => 'Purwanto', 'alamat' => 'Banyuurip RT16 RW05', 'anggota' => '43 Orang'],
+            ['nama' => 'Sidomuncul I', 'ketua' => 'Muadif', 'alamat' => 'Ngijo RT04 RW01', 'anggota' => 'Aktif'],
+            ['nama' => 'Sidomuncul II', 'ketua' => 'Shodiq', 'alamat' => 'Ngijo RT03 RW01', 'anggota' => '60 Orang'],
+            ['nama' => 'Harapan I', 'ketua' => 'Basuki', 'alamat' => 'Banyuurip RT14 RW01', 'anggota' => '47 Orang'],
+            ['nama' => 'Harapan II', 'ketua' => 'Muh Thoha', 'alamat' => 'Palemrejo RT09 RW02', 'anggota' => '60 Orang'],
+            ['nama' => 'Ngudi Rejeki I', 'ketua' => 'Supadi', 'alamat' => 'Ngeliyangan RT24 RW07', 'anggota' => '26 Orang'],
+            ['nama' => 'Ngudi Rejeki II', 'ketua' => 'Juwadi', 'alamat' => 'Jlegong RT11 RW03', 'anggota' => '82 Orang'],
+            ['nama' => 'Ngudi Rejeki III', 'ketua' => 'Jumanto', 'alamat' => 'Ngeliyangan RT27 RW07', 'anggota' => '54 Orang'],
+        ];
+
+        $inventaris_balai_desa = [
+            [
+                'id' => 1,
+                'nama' => 'Tenda Acara & Panggung Portable Balai Desa',
+                'kategori' => 'Peralatan Acara & Hajatan',
+                'status' => 'Tersedia',
+                'kapasitas' => '4 Unit Tenda (6x12m) & Panggung (4x6m)',
+                'lokasi' => 'Gudang Balai Desa Banyuurip',
+                'syarat' => 'KTP Warga Banyuurip & Surat Permohonan H-3 ke Kaur Umum',
+                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
+            ],
+            [
+                'id' => 2,
+                'nama' => 'Sound System Portable Wireless & 4 Microphone',
+                'kategori' => 'Peralatan Acara & Hajatan',
+                'status' => 'Tersedia',
+                'kapasitas' => '2 Set Active Speaker 15 Inch + Mic Wireless',
+                'lokasi' => 'Ruang Inventaris Balai Desa',
+                'syarat' => 'Borang Peminjaman + Menjaga Kebersihan & Keamanan Alat',
+                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
+            ],
+            [
+                'id' => 3,
+                'nama' => 'Hand Tractor Quick G1000 Kubota (Alsintan)',
+                'kategori' => 'Alat Pertanian Komunal',
+                'status' => 'Tersedia',
+                'kapasitas' => '2 Unit Hand Tractor Siap Pakai',
+                'lokasi' => 'Sentra Agribisnis Balai Desa',
+                'syarat' => 'Anggota Poktan / Warga Petani Desa Banyuurip',
+                'pj' => 'Mbah Wagiman (Ketua Poktan Tani Makmur)'
+            ],
+            [
+                'id' => 4,
+                'nama' => 'Pompa Air Irigasi Sawah (Water Pump 3 Inch)',
+                'kategori' => 'Alat Pertanian Komunal',
+                'status' => 'Tersedia',
+                'kapasitas' => '3 Unit Pompa Air Bensin 5.5 HP',
+                'lokasi' => 'Gudang Alsintan Balai Desa',
+                'syarat' => 'Borang Peminjaman & BBM Mandiri',
+                'pj' => 'Pak Darji (Ketua Gapoktan Subur Makmur)'
+            ],
+            [
+                'id' => 5,
+                'nama' => 'Molen Beton & Peralatan Tukang Kerja Bakti',
+                'kategori' => 'Mesin & Konstruksi',
+                'status' => 'Tersedia',
+                'kapasitas' => '1 Unit Molen Beton + 5 Gerobak Dorong',
+                'lokasi' => 'Depo Logistik Balai Desa',
+                'syarat' => 'Koordinasi Ketua RT/RW untuk Kegiatan Kerja Bakti',
+                'pj' => 'Pak Bambang (Kaur Umum - 0812-3456-7890)'
+            ],
+        ];
+
+        $sop_peminjaman = [
+            ['langkah' => '1', 'judul' => 'Pengajuan Surat Permohonan H-3', 'deskripsi' => 'Pemohon mengajukan surat permohonan peminjaman ke Kaur Umum Balai Desa minimal H-3 sebelum tanggal pemakaian.'],
+            ['langkah' => '2', 'judul' => 'Verifikasi Jadwal & Fisik Barang', 'deskripsi' => 'Petugas mengecek ketersediaan aset pada tanggal yang diminta serta memeriksa kondisi kelayakan fisik barang.'],
+            ['langkah' => '3', 'judul' => 'Penandatanganan Berita Acara', 'deskripsi' => 'Pemohon menandatangani Borang Peminjaman & Berita Acara Serah Terima Aset disertai jaminan identitas (KTP Warga).'],
+            ['langkah' => '4', 'judul' => 'Penggunaan & Kewajiban Menjaga Aset', 'deskripsi' => 'Pemohon wajib menjaga kebersihan, ketertiban, dan keselamatan barang/fasilitas Balai Desa selama penggunaan.'],
+            ['langkah' => '5', 'judul' => 'Pengembalian & Serah Terima Ulang', 'deskripsi' => 'Aset dikembalikan tepat waktu dalam keadaan bersih dan berfungsi normal untuk dilakukan pengesahan akhir.'],
+        ];
+
+        return Inertia::render('Agribisnis', compact(
+            'stats', 
+            'luas_lahan_breakdown', 
+            'kelompok_tani', 
+            'inventaris_balai_desa', 
+            'sop_peminjaman'
+        ));
     }
 
-    // Transparansi Keuangan (APBDes) & Regulasi Hukum
+    // Pusat Hukum Desa (JDIH - Produk Hukum & Regulasi Desa)
+    public function hukum()
+    {
+        $regulasi = Regulasi::orderBy('id', 'desc')->get();
+        $antikorupsiDocs = DesaAntikorupsi::orderBy('id', 'asc')->get();
+
+        return Inertia::render('PusatHukum', compact('regulasi', 'antikorupsiDocs'));
+    }
+
+    // Portal Berita & Informasi Desa Banyuurip
+    public function berita()
+    {
+        $berita = Berita::orderBy('id', 'desc')->get();
+        return Inertia::render('BeritaDesa', compact('berita'));
+    }
+
+    // Transparansi Keuangan (APBDes 2026) & Panduan Pembayaran PBB SiPAD
     public function keuangan()
     {
-        // Fetch APBDes data dynamically from database and map it to structural arrays
-        $pendapatan = Apbdes::where('kategori', 'pendapatan')->orderBy('id', 'asc')->get()->map(fn($item) => [
-            'sumber' => $item->rincian,
-            'jumlah' => $item->jumlah,
-            'persen' => $item->persen
-        ])->toArray();
+        $apbdes_pendapatan = [
+            ['sumber' => 'Dana Desa (DD)', 'anggaran' => 373456000, 'realisasi' => 373456000, 'persen' => 100.0, 'status' => 'Terserap Sepenuhnya ✅', 'kategori' => 'Transfer Pusat'],
+            ['sumber' => 'Alokasi Dana Desa (ADD)', 'anggaran' => 593245000, 'realisasi' => 350797136, 'persen' => 59.1, 'status' => 'Terserap Sebagian', 'kategori' => 'Transfer Kabupaten'],
+            ['sumber' => 'Bagi Hasil Pajak & Retribusi (PBH)', 'anggaran' => 111055000, 'realisasi' => 70064000, 'persen' => 63.1, 'status' => 'Terserap Sebagian', 'kategori' => 'Transfer Kabupaten'],
+            ['sumber' => 'BanKeu Kabupaten/Kota', 'anggaran' => 125000000, 'realisasi' => 50000000, 'persen' => 40.0, 'status' => 'Terserap Sebagian', 'kategori' => 'Transfer Kabupaten'],
+            ['sumber' => 'Pendapatan Asli Desa (PADes)', 'anggaran' => 212000000, 'realisasi' => 10000000, 'persen' => 4.7, 'status' => 'Rendah (4.7%) ⚠️', 'kategori' => 'Pendapatan Asli'],
+            ['sumber' => 'Bantuan Keuangan Provinsi', 'anggaran' => 175000000, 'realisasi' => 0, 'persen' => 0.0, 'status' => 'Belum Masuk (0%) ❌', 'kategori' => 'Transfer Provinsi'],
+            ['sumber' => 'Pendapatan Lain-Lain', 'anggaran' => 3250000, 'realisasi' => 805235, 'persen' => 24.8, 'status' => 'Terserap Sebagian', 'kategori' => 'Lain-Lain'],
+        ];
 
-        $belanja = Apbdes::where('kategori', 'belanja')->orderBy('id', 'asc')->get()->map(fn($item) => [
-            'bidang' => $item->rincian,
-            'jumlah' => $item->jumlah,
-            'persen' => $item->persen
-        ])->toArray();
+        $apbdes_belanja = [
+            ['bidang' => 'Bidang Penyelenggaraan Pemerintahan Desa', 'anggaran' => 893501180, 'realisasi' => 349732290, 'persen' => 39.1],
+            ['bidang' => 'Bidang Pelaksanaan Pembangunan Desa', 'anggaran' => 587868000, 'realisasi' => 144538000, 'persen' => 24.6],
+            ['bidang' => 'Bidang Pemberdayaan Masyarakat', 'anggaran' => 88315000, 'realisasi' => 64066000, 'persen' => 72.5],
+            ['bidang' => 'Bidang Penanggulangan Bencana & Mendesak', 'anggaran' => 55400000, 'realisasi' => 25200000, 'persen' => 45.5],
+            ['bidang' => 'Bidang Pembinaan Kemasyarakatan', 'anggaran' => 14486000, 'realisasi' => 0, 'persen' => 0.0],
+        ];
 
-        $apbdes = [
-            'pendapatan' => $pendapatan,
-            'belanja' => $belanja
+        $pembiayaan = [
+            'penerimaan_anggaran' => 49564180,
+            'pengeluaran_anggaran' => 3000000,
+            'netto_anggaran' => 46564180,
+            'penerimaan_realisasi' => 49564180,
+            'pengeluaran_realisasi' => 0,
+            'netto_realisasi' => 49564180,
+        ];
+
+        $summary_stats = [
+            'total_anggaran_pendapatan' => 1593006000,
+            'total_realisasi_pendapatan' => 855122371,
+            'total_anggaran_belanja' => 1639570180,
+            'total_realisasi_belanja' => 583536290,
+            'persen_transfer' => 86.5,
+            'surplus_realisasi' => 271586081,
+        ];
+
+        $panduan_pbb = [
+            [
+                'id' => 1,
+                'judul' => 'Layanan 1 — Cek NJOP PBB',
+                'link' => 'https://sipad.id/publik/pbb_cek_njop',
+                'deskripsi' => 'Gunakan layanan ini untuk mengetahui nilai NJOP tanah dan bangunan sawah/rumah Anda sebelum membayar.',
+                'langkah' => [
+                    'Buka sipad.id/publik/pbb_cek_njop',
+                    'Pilih tahun SPPT (tersedia dari 2013 hingga 2026)',
+                    'Masukkan NOP diawali kode 33-09 (Kode Kabupaten Boyolali)',
+                    'Klik "Cari Data"',
+                    'Data yang muncul: Nama Subyek, Letak Objek Pajak, Total NJOP Bumi, NJOP Bumi per m², Total NJOP Bangunan, dan NJOP Bangunan per m²'
+                ]
+            ],
+            [
+                'id' => 2,
+                'judul' => 'Layanan 2 — Cek Tagihan PBB',
+                'link' => 'https://sipad.id/publik/pbb_cek_tagihan',
+                'deskripsi' => 'Gunakan layanan ini untuk tahu berapa nominal PBB yang harus dibayar dan apakah ada tunggakan.',
+                'langkah' => [
+                    'Buka sipad.id/publik/pbb_cek_tagihan',
+                    'Masukkan NOP diawali kode 33-09',
+                    'Klik "Cari Data"',
+                    'Tabel hasil pencarian menampilkan: Tahun Pajak, Nama Wajib Pajak, Tanggal Jatuh Tempo, Denda (2% per bulan), dan Jumlah yang harus dibayar'
+                ]
+            ],
+            [
+                'id' => 3,
+                'judul' => 'Layanan 3 — Bayar PBB Perorangan via QRIS',
+                'link' => 'https://sipad.id/qrisgen/pbb',
+                'deskripsi' => 'Cara bayar paling cepat, cukup scan kode QRIS dari HP menggunakan GoPay, OVO, Dana, ShopeePay, atau M-Banking!',
+                'langkah' => [
+                    'Buka sipad.id/qrisgen/pbb',
+                    'Masukkan NOP atau Kode Bayar PBB-P2 Kolektif dan Tahun Pajak',
+                    'Klik "Bayar QRIS"',
+                    'Kode QRIS akan muncul di layar',
+                    'Buka aplikasi e-wallet / mobile banking, pilih "Scan QR", lalu scan kode QRIS yang tampil',
+                    'Konfirmasi pembayaran dengan PIN & simpan screenshot bukti bayar'
+                ]
+            ],
+            [
+                'id' => 4,
+                'judul' => 'Layanan 4 — Bayar PBB Kolektif (Perangkat Desa / RT)',
+                'link' => 'https://sipad.id/publik/pbb_bayar',
+                'deskripsi' => 'Layanan khusus untuk Perangkat Desa atau RT yang ingin membantu warganya membayar PBB sekaligus dalam satu transaksi.',
+                'langkah' => [
+                    'Buka sipad.id/publik/pbb_bayar',
+                    'Isi data: Nama, Email, Nomor Telepon, dan Tahun SPPT',
+                    'Pilih Kecamatan Klego dan Desa Banyuurip',
+                    'Klik "Cari Data" — daftar NOP di desa akan muncul',
+                    'Pilih NOP warga yang ingin dibayarkan (bisa pilih semua atau per satu)',
+                    'Pilih bank pembayaran: Bank Jateng (Virtual Account) atau Bank BNI (Virtual Account)',
+                    'Klik "Bentuk Kode Bayar" & bayar via virtual akun'
+                ]
+            ],
+            [
+                'id' => 5,
+                'judul' => 'Layanan 5 — Cetak Bukti Bayar (SSPD)',
+                'link' => 'https://sipad.id/publik/pbb_cetak_sspd',
+                'deskripsi' => 'Cetak Surat Setoran Pajak Daerah (SSPD) resmi yang sah secara hukum setelah pembayaran selesai.',
+                'langkah' => [
+                    'Buka sipad.id/publik/pbb_cetak_sspd',
+                    'Pilih tahun SPPT & masukkan NOP (33-09)',
+                    'Klik "Cari Data"',
+                    'Klik "File SSPD" untuk mengunduh bukti bayar resmi dalam format PDF'
+                ]
+            ],
+            [
+                'id' => 6,
+                'judul' => 'Layanan 6 — Cetak Salinan SPPT',
+                'link' => 'https://sipad.id/salinansppt',
+                'deskripsi' => 'Gunakan layanan ini apabila lembar SPPT fisik hilang atau rusak untuk mengunduh salinan digital resmi.',
+                'langkah' => [
+                    'Buka sipad.id/salinansppt',
+                    'Masukkan NOP Anda',
+                    'Klik "Download Salinan"',
+                    'File SPPT format PDF akan otomatis terunduh untuk dicetak'
+                ]
+            ],
+            [
+                'id' => 7,
+                'judul' => 'Layanan 7 — Cetak Kode Bayar Kolektif',
+                'link' => 'https://sipad.id/publik/pbb_cetak_kode_bayar',
+                'deskripsi' => 'Khusus untuk Perangkat Desa / RT yang sudah membuat kode bayar kolektif dan ingin mencetaknya kembali.',
+                'langkah' => [
+                    'Buka sipad.id/publik/pbb_cetak_kode_bayar',
+                    'Masukkan kode bayar kolektif yang sudah dibuat',
+                    'Kode bayar akan tampil dan siap dicetak'
+                ]
+            ]
+        ];
+
+        $kontak_bkd = [
+            'alamat' => 'Jl. Merdeka Timur, Kemiri, Boyolali, Jawa Tengah',
+            'email' => 'pajakdaerah@boyolali.go.id',
+            'telepon' => '(0276) 321073',
+            'fax' => '(0276) 322602'
         ];
 
         // Fetch regulasi and antikorupsi from database
         $regulasi = Regulasi::orderBy('id', 'desc')->get();
         $antikorupsiDocs = DesaAntikorupsi::orderBy('id', 'asc')->get();
 
-        return view('keuangan', compact('apbdes', 'regulasi', 'antikorupsiDocs'));
+        return Inertia::render('Keuangan', compact(
+            'apbdes_pendapatan', 
+            'apbdes_belanja', 
+            'pembiayaan', 
+            'summary_stats', 
+            'panduan_pbb', 
+            'kontak_bkd', 
+            'regulasi', 
+            'antikorupsiDocs'
+        ));
     }
 
-    // Portal Desa Antikorupsi (5 Pilar Indikator KPK & CRUD Regulasi Drive)
+    // Portal Desa Antikorupsi (5 Pilar Indikator KPK & 18 Indikator Resmi)
     public function desaAntikorupsi()
     {
         $antikorupsi = DesaAntikorupsi::orderBy('id', 'asc')->get();
@@ -161,37 +383,65 @@ class VillageController extends Controller
         $pilarKpk = [
             [
                 'kunci' => 'Penguatan Tata Laksana',
+                'pilar' => 'Pilar 1: Penguatan Tata Laksana',
                 'deskripsi' => 'Pengelolaan administrasi desa yang tertib, SOP Pengadaan Barang/Jasa transparan, dan pencegahan gratifikasi/pungli.',
                 'icon' => 'file-text',
-                'warna' => 'emerald'
+                'indikator_list' => [
+                    ['no' => 1, 'judul' => 'Kebijakan Desa tentang Perencanaan, Pelaksanaan, Penatausahaan dan Pertanggungjawaban APBDes'],
+                    ['no' => 2, 'judul' => 'Kebijakan Desa mengenai mekanisme Pengawasan dan Evaluasi Kinerja Perangkat Desa'],
+                    ['no' => 3, 'judul' => 'Kebijakan Desa tentang pengendalian gratifikasi, suap, dan konflik kepentingan'],
+                    ['no' => 4, 'judul' => 'Keberadaan perjanjian kerjasama PBJ dan melalui proses pengadaan barang-jasa di Desa'],
+                    ['no' => 5, 'judul' => 'Kebijakan Desa tentang pakta integritas dan sejenisnya']
+                ]
             ],
             [
                 'kunci' => 'Penguatan Pengawasan',
-                'deskripsi' => 'Pengawasan efektif BPD, partisipasi pengawasan warga, dan tersedianya Sistem Pengaduan Masyarakat (Whistleblowing).',
+                'pilar' => 'Pilar 2: Penguatan Pengawasan',
+                'deskripsi' => 'Pengawasan efektif BPD, evaluasi kinerja perangkat, dan rekam jejak bebas tindak pidana korupsi.',
                 'icon' => 'shield-alert',
-                'warna' => 'sky'
+                'indikator_list' => [
+                    ['no' => 6, 'judul' => 'Keberadaan kegiatan pengawasan dan evaluasi kinerja perangkat desa'],
+                    ['no' => 7, 'judul' => 'Keberadaan tindak lanjut hasil pembinaan, petunjuk, pengawasan dan pemeriksaan dari pemerintah'],
+                    ['no' => 8, 'judul' => 'Tidak ada aparatur desa dalam 3 tahun terakhir yang terjerat tindak pidana korupsi']
+                ]
             ],
             [
                 'kunci' => 'Penguatan Pelayanan Publik',
-                'deskripsi' => 'Kepastian standar pelayanan administrasi kependudukan tanpa biaya (Rp 0) serta penanganan keluhan warga yang cepat.',
+                'pilar' => 'Pilar 3: Penguatan Pelayanan Publik',
+                'deskripsi' => 'Kemudahan akses pelayanan warga, keberadaan maklumat pelayanan, dan survei kepuasan masyarakat.',
                 'icon' => 'users',
-                'warna' => 'indigo'
+                'indikator_list' => [
+                    ['no' => 9, 'judul' => 'Keberadaan layanan pengaduan bagi masyarakat'],
+                    ['no' => 10, 'judul' => 'Keberadaan survei kepuasan masyarakat terhadap layanan pemerintah desa'],
+                    ['no' => 13, 'judul' => 'Keberadaan Maklumat Pelayanan']
+                ]
             ],
             [
                 'kunci' => 'Penguatan Partisipasi Publik',
-                'deskripsi' => 'Keterbukaan informasi Musbangdes/Musdes, infografis APBDes di ruang publik, serta kemudahan akses dokumen publik.',
+                'pilar' => 'Pilar 4: Penguatan Partisipasi Publik',
+                'deskripsi' => 'Keterbukaan informasi APBDes di ruang publik, keterlibatan warga dalam penyusunan RKPDes & LKD.',
                 'icon' => 'eye',
-                'warna' => 'purple'
+                'indikator_list' => [
+                    ['no' => 11, 'judul' => 'Keterbukaan dan akses masyarakat desa terhadap informasi standar pelayanan minimal (SPM)'],
+                    ['no' => 12, 'judul' => 'Keberadaan media informasi tentang APBDes di Balai Desa / tempat umum yang mudah diakses'],
+                    ['no' => 14, 'judul' => 'Partisipasi dan keterlibatan masyarakat dalam penyusunan RKP Desa'],
+                    ['no' => 16, 'judul' => 'Keterlibatan Lembaga Kemasyarakatan Desa (LKD) dan masyarakat dalam pembangunan']
+                ]
             ],
             [
                 'kunci' => 'Budaya Antikorupsi',
-                'deskripsi' => 'Penanaman nilai integritas kejujuran, pembiasaan kearifan lokal bersih dari korupsi, serta edukasi antikorupsi warga.',
+                'pilar' => 'Pilar 5: Kearifan Lokal & Budaya Antikorupsi',
+                'deskripsi' => 'Penanaman nilai integritas kejujuran, norma hukum adat/lokal, dan peran aktif tokoh masyarakat.',
                 'icon' => 'heart-handshake',
-                'warna' => 'amber'
+                'indikator_list' => [
+                    ['no' => 15, 'judul' => 'Kesadaran masyarakat dalam mencegah terjadinya praktik gratifikasi, suap dan konflik kepentingan'],
+                    ['no' => 17, 'judul' => 'Budaya lokal-hukum adat yang mendorong upaya pencegahan tindak pidana korupsi'],
+                    ['no' => 18, 'judul' => 'Tokoh masyarakat, agama, adat, pemuda & perempuan yang mendorong pencegahan korupsi']
+                ]
             ]
         ];
 
-        return view('desa-antikorupsi', compact('antikorupsi', 'pilarKpk'));
+        return Inertia::render('DesaAntikorupsi', compact('antikorupsi', 'pilarKpk'));
     }
 
     // POST endpoint for new regulation
@@ -244,7 +494,7 @@ class VillageController extends Controller
             'gambar' => $item->gambar,
         ])->toArray();
 
-        return view('umkm', compact('umkm'));
+        return Inertia::render('Umkm', compact('umkm'));
     }
 
     // POST endpoint for new UMKM
@@ -314,7 +564,7 @@ class VillageController extends Controller
             ]
         ];
 
-        return view('edukasi-5s', compact('konsep5s'));
+        return Inertia::render('Edukasi5s', compact('konsep5s'));
     }
 
     // Admin Dashboard Mockup (Arya & Dwi)
@@ -331,6 +581,6 @@ class VillageController extends Controller
         // Fetch recent screenings from DB
         $recent_screenings = SkriningIspa::orderBy('id', 'desc')->take(5)->get();
 
-        return view('admin', compact('stats', 'recent_screenings'));
+        return Inertia::render('Admin/Dashboard', compact('stats', 'recent_screenings'));
     }
 }

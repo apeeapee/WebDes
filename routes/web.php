@@ -11,6 +11,8 @@ Route::get('/profil', [VillageController::class, 'profil'])->name('profil');
 Route::get('/kesehatan', [VillageController::class, 'kesehatan'])->name('kesehatan');
 Route::get('/agribisnis', [VillageController::class, 'agribisnis'])->name('agribisnis');
 Route::get('/keuangan', [VillageController::class, 'keuangan'])->name('keuangan');
+Route::get('/hukum', [VillageController::class, 'hukum'])->name('hukum');
+Route::get('/berita', [VillageController::class, 'berita'])->name('berita');
 Route::get('/desa-antikorupsi', [VillageController::class, 'desaAntikorupsi'])->name('desa-antikorupsi');
 Route::get('/umkm', [VillageController::class, 'umkm'])->name('umkm');
 Route::get('/edukasi-5s', [VillageController::class, 'edukasi5s'])->name('edukasi5s');
@@ -24,6 +26,7 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 // Protected Admin routes
 Route::middleware(['admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+    Route::put('/admin/stats', [AdminController::class, 'updateStats'])->name('admin.stats.update');
     
     // Berita CRUD
     Route::get('/admin/berita', [AdminController::class, 'beritaIndex'])->name('admin.berita.index');

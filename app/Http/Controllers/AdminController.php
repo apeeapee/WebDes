@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use App\Models\Berita;
 use App\Models\Sejarah;
 use App\Models\PerangkatDesa;
@@ -15,6 +16,7 @@ use App\Models\Umkm;
 use App\Models\Apbdes;
 use App\Models\AgribisnisStat;
 use App\Models\DesaAntikorupsi;
+use App\Models\VillageSetting;
 
 class AdminController extends Controller
 {
@@ -22,7 +24,10 @@ class AdminController extends Controller
     public function index()
     {
         $stats = [
-            'total_warga' => 3420,
+            'total_warga' => (int) VillageSetting::getVal('total_warga', 3420),
+            'kepala_keluarga' => (int) VillageSetting::getVal('kepala_keluarga', 985),
+            'luas_wilayah' => VillageSetting::getVal('luas_wilayah', '245 Hektar'),
+            'posyandu_aktif' => (int) VillageSetting::getVal('posyandu_aktif', 5),
             'total_screening_ispa' => SkriningIspa::count(),
             'skrining_risiko_tinggi' => SkriningIspa::where('risiko', 'Tinggi')->count(),
             'umkm_aktif' => Umkm::count(),
@@ -36,14 +41,31 @@ class AdminController extends Controller
 
         $recent_screenings = SkriningIspa::orderBy('id', 'desc')->take(5)->get();
 
-        return view('admin.dashboard', compact('stats', 'recent_screenings'));
+        return Inertia::render('Admin/Dashboard', compact('stats', 'recent_screenings'));
+    }
+
+    public function updateStats(Request $request)
+    {
+        $data = $request->validate([
+            'total_warga' => 'required|numeric|min:0',
+            'kepala_keluarga' => 'required|numeric|min:0',
+            'luas_wilayah' => 'required|string|max:255',
+            'posyandu_aktif' => 'required|numeric|min:0',
+        ]);
+
+        VillageSetting::setVal('total_warga', $data['total_warga']);
+        VillageSetting::setVal('kepala_keluarga', $data['kepala_keluarga']);
+        VillageSetting::setVal('luas_wilayah', $data['luas_wilayah']);
+        VillageSetting::setVal('posyandu_aktif', $data['posyandu_aktif']);
+
+        return redirect()->route('admin')->with('success', 'Statistik utama desa berhasil diperbarui!');
     }
 
     // 2. Berita CRUD
     public function beritaIndex()
     {
         $items = Berita::orderBy('id', 'desc')->get();
-        return view('admin.berita', compact('items'));
+        return Inertia::render('Admin/Berita', compact('items'));
     }
 
     public function beritaStore(Request $request)
@@ -114,7 +136,7 @@ class AdminController extends Controller
     public function sejarahIndex()
     {
         $items = Sejarah::orderBy('tahun', 'asc')->get();
-        return view('admin.sejarah', compact('items'));
+        return Inertia::render('Admin/Sejarah', compact('items'));
     }
 
     public function sejarahStore(Request $request)
@@ -153,7 +175,7 @@ class AdminController extends Controller
     public function perangkatIndex()
     {
         $items = PerangkatDesa::orderBy('id', 'asc')->get();
-        return view('admin.perangkat', compact('items'));
+        return Inertia::render('Admin/Perangkat', compact('items'));
     }
 
     public function perangkatStore(Request $request)
@@ -162,30 +184,79 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
-            'foto' => 'nullable|string|max:255',
+            'foto' => 'nullable',
         ]);
 
-        PerangkatDesa::create($data);
+        $perangkatData = [
+            'nama' => $data['nama'],
+            'jabatan' => $data['jabatan'],
+            'kontak' => $data['kontak'],
+            'foto' => null,
+        ];
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            if (!$file->isValid()) {
+                return back()->withErrors(['foto' => 'Gagal mengunggah foto. Ukuran file foto terlalu besar melebihi batas PHP server (max 2MB-8MB). Silakan kompres gambar terlebih dahulu.']);
+            }
+            $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9\._-]/', '', $file->getClientOriginalName());
+            $filePath = $file->storeAs('perangkat', $fileName, 'public');
+            $perangkatData['foto'] = 'storage/' . $filePath;
+        }
+
+        PerangkatDesa::create($perangkatData);
         return redirect()->route('admin.perangkat.index')->with('success', 'Perangkat desa berhasil ditambahkan!');
     }
 
     public function perangkatUpdate(Request $request, $id)
     {
+        $item = PerangkatDesa::findOrFail($id);
+
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
-            'foto' => 'nullable|string|max:255',
+            'foto' => 'nullable',
         ]);
 
-        $item = PerangkatDesa::findOrFail($id);
-        $item->update($data);
+        $perangkatData = [
+            'nama' => $data['nama'],
+            'jabatan' => $data['jabatan'],
+            'kontak' => $data['kontak'],
+        ];
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            if (!$file->isValid()) {
+                return back()->withErrors(['foto' => 'Gagal mengunggah foto. Ukuran file foto terlalu besar melebihi batas PHP server (max 2MB-8MB). Silakan kompres gambar terlebih dahulu.']);
+            }
+
+            // Delete old photo if exists
+            if ($item->foto) {
+                $oldPath = str_replace('storage/', '', $item->foto);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9\._-]/', '', $file->getClientOriginalName());
+            $filePath = $file->storeAs('perangkat', $fileName, 'public');
+            $perangkatData['foto'] = 'storage/' . $filePath;
+        }
+
+        $item->update($perangkatData);
         return redirect()->route('admin.perangkat.index')->with('success', 'Perangkat desa berhasil diperbarui!');
     }
 
     public function perangkatDestroy($id)
     {
         $item = PerangkatDesa::findOrFail($id);
+        if ($item->foto) {
+            $oldPath = str_replace('storage/', '', $item->foto);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+        }
         $item->delete();
         return redirect()->route('admin.perangkat.index')->with('success', 'Perangkat desa berhasil dihapus!');
     }
@@ -195,7 +266,7 @@ class AdminController extends Controller
     {
         $items = Komoditas::orderBy('id', 'asc')->get();
         $stats = AgribisnisStat::first();
-        return view('admin.komoditas', compact('items', 'stats'));
+        return Inertia::render('Admin/Komoditas', compact('items', 'stats'));
     }
 
     public function komoditasStore(Request $request)
@@ -258,7 +329,7 @@ class AdminController extends Controller
     public function asetTaniIndex()
     {
         $items = AsetTani::orderBy('id', 'asc')->get();
-        return view('admin.asettani', compact('items'));
+        return Inertia::render('Admin/AsetTani', compact('items'));
     }
 
     public function asetTaniStore(Request $request)
@@ -299,7 +370,7 @@ class AdminController extends Controller
     public function regulasiIndex()
     {
         $items = Regulasi::orderBy('id', 'desc')->get();
-        return view('admin.regulasi', compact('items'));
+        return Inertia::render('Admin/Regulasi', compact('items'));
     }
 
     public function regulasiStore(Request $request)
@@ -342,7 +413,7 @@ class AdminController extends Controller
     public function umkmIndex()
     {
         $items = Umkm::orderBy('id', 'desc')->get();
-        return view('admin.umkm', compact('items'));
+        return Inertia::render('Admin/Umkm', compact('items'));
     }
 
     public function umkmStore(Request $request)
@@ -351,21 +422,13 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
-            'omzet' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'alamat' => 'required|string',
             'deskripsi' => 'required|string',
             'produk' => 'required|string',
+            'omzet' => 'nullable|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
-
-        $omzetVal = (int) filter_var($data['omzet'], FILTER_SANITIZE_NUMBER_INT);
-        $biayaVal = (int) ($omzetVal * 0.55);
-        $labaVal = $omzetVal - $biayaVal;
-
-        $omzetFormatted = 'Rp ' . number_format($omzetVal, 0, ',', '.');
-        $biayaFormatted = 'Rp ' . number_format($biayaVal, 0, ',', '.');
-        $labaFormatted = 'Rp ' . number_format($labaVal, 0, ',', '.');
 
         $produkArray = array_map('trim', explode(',', $data['produk']));
 
@@ -376,10 +439,10 @@ class AdminController extends Controller
             'kontak' => $data['kontak'],
             'alamat' => $data['alamat'],
             'deskripsi' => $data['deskripsi'],
-            'omzet_bulanan' => $omzetFormatted,
-            'biaya_produksi' => $biayaFormatted,
-            'laba_bersih' => $labaFormatted,
-            'pencatatan' => 'Buku Kas Sederhana (Dibantu Program KKN Akuntansi)',
+            'omzet_bulanan' => '',
+            'biaya_produksi' => '',
+            'laba_bersih' => '',
+            'pencatatan_keuangan' => 'Laporan Mandiri',
             'produk' => $produkArray,
         ];
 
@@ -397,29 +460,21 @@ class AdminController extends Controller
 
     public function umkmUpdate(Request $request, $id)
     {
+        $item = Umkm::findOrFail($id);
+
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
-            'omzet' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
             'alamat' => 'required|string',
             'deskripsi' => 'required|string',
             'produk' => 'required|string',
+            'omzet' => 'nullable|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
-        $omzetVal = (int) filter_var($data['omzet'], FILTER_SANITIZE_NUMBER_INT);
-        $biayaVal = (int) ($omzetVal * 0.55);
-        $labaVal = $omzetVal - $biayaVal;
-
-        $omzetFormatted = 'Rp ' . number_format($omzetVal, 0, ',', '.');
-        $biayaFormatted = 'Rp ' . number_format($biayaVal, 0, ',', '.');
-        $labaFormatted = 'Rp ' . number_format($labaVal, 0, ',', '.');
-
         $produkArray = array_map('trim', explode(',', $data['produk']));
-
-        $item = Umkm::findOrFail($id);
 
         $umkmData = [
             'nama' => $data['nama'],
@@ -428,9 +483,6 @@ class AdminController extends Controller
             'kontak' => $data['kontak'],
             'alamat' => $data['alamat'],
             'deskripsi' => $data['deskripsi'],
-            'omzet_bulanan' => $omzetFormatted,
-            'biaya_produksi' => $biayaFormatted,
-            'laba_bersih' => $labaFormatted,
             'produk' => $produkArray,
         ];
 
@@ -470,7 +522,7 @@ class AdminController extends Controller
     public function skriningIndex()
     {
         $items = SkriningIspa::orderBy('id', 'desc')->get();
-        return view('admin.skrining', compact('items'));
+        return Inertia::render('Admin/Skrining', compact('items'));
     }
 
     public function skriningDestroy($id)
@@ -484,7 +536,7 @@ class AdminController extends Controller
     public function apbdesIndex()
     {
         $items = Apbdes::orderBy('kategori', 'asc')->orderBy('id', 'asc')->get();
-        return view('admin.apbdes', compact('items'));
+        return Inertia::render('Admin/Apbdes', compact('items'));
     }
 
     public function apbdesStore(Request $request)
@@ -525,7 +577,7 @@ class AdminController extends Controller
     public function antikorupsiIndex()
     {
         $items = DesaAntikorupsi::orderBy('id', 'desc')->get();
-        return view('admin.antikorupsi', compact('items'));
+        return Inertia::render('Admin/Antikorupsi', compact('items'));
     }
 
     public function antikorupsiStore(Request $request)

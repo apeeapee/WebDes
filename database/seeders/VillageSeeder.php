@@ -23,43 +23,69 @@ class VillageSeeder extends Seeder
             'ringkasan' => 'Tim II KKN Universitas Diponegoro meluncurkan program Banyuurip Digital Gateway guna mempermudah akses informasi profil, potensi ekonomi, dan kesehatan satu pintu.',
             'kategori' => 'Kegiatan Desa',
             'tanggal' => '15 Juli 2026',
-            'gambar' => 'digital_gateway'
+            'gambar' => null
         ]);
         Berita::create([
             'judul' => 'Penerapan Sistem Budaya 5S Jepang di Lingkungan Kantor Desa',
             'ringkasan' => 'Perangkat desa Banyuurip mulai mengimplementasikan prinsip Seiri, Seiton, Seiso, Seiketsu, dan Shitsuke untuk meningkatkan efisiensi administrasi.',
             'kategori' => 'Edukasi',
             'tanggal' => '10 Juli 2026',
-            'gambar' => 'budaya_5s'
+            'gambar' => null
         ]);
         Berita::create([
             'judul' => 'Peningkatan Kesadaran Kesehatan Paru-Paru dengan E-Book RESPIRA',
             'ringkasan' => 'Kader Posyandu Desa Banyuurip bekerja sama dengan mahasiswa keperawatan KKN Undip mengadakan penyuluhan pencegahan Infeksi Saluran Pernapasan Akut (ISPA).',
             'kategori' => 'Kesehatan',
             'tanggal' => '05 Juli 2026',
-            'gambar' => 'kesehatan_ispa'
+            'gambar' => null
         ]);
 
-        // 2. Sejarah
+        // 2. Sejarah & Asal Usul Desa Banyuurip
+        Sejarah::truncate();
         Sejarah::create([
-            'tahun' => '1830',
-            'judul' => 'Asal Usul Nama Banyuurip',
-            'deskripsi' => 'Nama Banyuurip berasal dari bahasa Jawa "Banyu" (Air) dan "Urip" (Hidup). Konon, desa ini didirikan di dekat mata air suci yang tidak pernah kering meskipun dilanda kemarau panjang, melambangkan sumber kehidupan bagi warganya.'
+            'tahun' => 'Era Mataram (Abad 18)',
+            'judul' => 'Perjuangan Eyang Ijo & Para Sesepuh',
+            'deskripsi' => 'Pangeran Kajoran dari Mataram (dikenal sebagai Mbah Ijo) bersama prajurit dan tokoh sakti seperti Eyang Liyang (Ngliyangan) & Eyang Jegrek (Banyuurip) bersatu di wilayah Dukuh Ngijo untuk mengintai dan mengusir penjajah Belanda.'
         ]);
         Sejarah::create([
-            'tahun' => '1945',
-            'judul' => 'Era Kemerdekaan & Konsolidasi Pertanian',
-            'deskripsi' => 'Pasca-kemerdekaan, para petani Banyuurip mulai berorganisasi membentuk kelompok tani tradisional untuk mengelola irigasi bersama demi ketahanan pangan lokal.'
+            'tahun' => 'Peristiwa Mur Genthong',
+            'judul' => 'Kisah Eyang Sumendhi Amijaya & Mata Air Mur Genthong',
+            'deskripsi' => 'Eyang Sumendhi Amijaya, punggawa Mataram asal Jatinom Klaten, dikejar Belanda hingga ke Gua Kedhung Banteng. Saat kehabisan bekal, beliau menancapkan tongkatnya ke batu padas di utara Dukuh Jlegong hingga memancarkan air murni yang tidak pernah habis meskipun musim kemarau, yang kini disebut Mur Genthong.'
         ]);
         Sejarah::create([
-            'tahun' => '2010',
-            'judul' => 'Modernisasi Infrastruktur Desa',
-            'deskripsi' => 'Pemerintah daerah mulai membangun akses jalan beraspal yang menghubungkan Banyuurip dengan pusat kecamatan di Boyolali, memicu pertumbuhan ekonomi lokal.'
+            'tahun' => 'Tradisi Adat',
+            'judul' => 'Tradisi Nyadran Safar Makam Eyang Sumendhi',
+            'deskripsi' => 'Sesuai pesan Eyang Sumendhi Amijaya sebelum kembali ke Mataram, masyarakat Dukuh Banyuurip & Jlegong rutin menggelar acara Nyadran di bulan Safar pada hari Jumat Wage (atau Rebo Wage) dengan olahan khas tempe bongkrek dan tumpeng panggang.'
         ]);
         Sejarah::create([
-            'tahun' => '2026',
-            'judul' => 'Peluncuran Banyuurip Digital Gateway',
-            'deskripsi' => 'Kerja sama dengan KKN Universitas Diponegoro melahirkan platform desa digital pertama yang mengintegrasikan layanan administrasi, potensi ekonomi, dan kesehatan.'
+            'tahun' => '1914 - 1954',
+            'judul' => 'Masa Kademangan Pangrembe (Demang Admo Wirono)',
+            'deskripsi' => 'Banyuurip merupakan bumi perdikan (tanah bebas pajak) dengan nama Kademangan Pangrembe Banyuurip, dipimpin oleh Eyang Demang Admo Wirono sebagai pemimpin pertama.'
+        ]);
+        Sejarah::create([
+            'tahun' => '1954 - 1971',
+            'judul' => 'Kepemimpinan Lurah Citro Pawiro',
+            'deskripsi' => 'Pemilihan lurah pertama secara demokratis yang dimenangkan oleh Lurah Citro Pawiro untuk memimpin pembangunan awal pasca-kemerdekaan.'
+        ]);
+        Sejarah::create([
+            'tahun' => '1971 - 1989',
+            'judul' => 'Kepemimpinan Lurah Samsul Bahri',
+            'deskripsi' => 'Lurah Samsul Bahri menjabat selama dua periode berturut-turut (1971-1980 dan 1980-1989) mengonsolidasi pertanian dan kelembagaan desa.'
+        ]);
+        Sejarah::create([
+            'tahun' => '1991 - 2007',
+            'judul' => 'Kepemimpinan Kades Mashuri',
+            'deskripsi' => 'Kades Mashuri memimpin selama dua periode (1991-1999 dan 1999-2007) meletakkan dasar penguatan infrastruktur dan perdesaan.'
+        ]);
+        Sejarah::create([
+            'tahun' => '2007 - 2019',
+            'judul' => 'Kepemimpinan Kades Mukorobin',
+            'deskripsi' => 'Kades Mukorobin menjabat selama dua periode (2007-2013 dan 2013-2019) mengarahkan pembangunan desa di era modern.'
+        ]);
+        Sejarah::create([
+            'tahun' => '2019 - Sekarang',
+            'judul' => 'Kepemimpinan Kades Haryanto',
+            'deskripsi' => 'Kades Haryanto (buyut dari Demang Atmo Wirono) memimpin Desa Banyuurip menuju era digitalisasi, transparansi APBDes, dan pemberdayaan ekonomi agribisnis.'
         ]);
 
         // 3. PerangkatDesa

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AuthController extends Controller
 {
@@ -12,7 +13,7 @@ class AuthController extends Controller
         if (Auth::check() && Auth::user()->role === 'admin') {
             return redirect()->route('admin');
         }
-        return view('auth.login');
+        return Inertia::render('Admin/Login');
     }
 
     public function login(Request $request)
