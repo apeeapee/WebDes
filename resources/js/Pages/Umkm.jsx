@@ -6,7 +6,8 @@ import {
     PhoneCall, 
     MapPin, 
     ShoppingBag, 
-    MessageSquare 
+    MessageSquare,
+    ExternalLink 
 } from 'lucide-react';
 
 export default function Umkm({ umkm }) {
@@ -70,6 +71,14 @@ export default function Umkm({ umkm }) {
                     >
                         Kerajinan Tangan
                     </button>
+                    <button 
+                        onClick={() => setSelectedCategory('pertanian')}
+                        class={`px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-colors cursor-pointer ${
+                            selectedCategory === 'pertanian' ? 'bg-sky-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-sky-50'
+                        }`}
+                    >
+                        Pertanian & Hasil Tani
+                    </button>
                 </div>
 
                 {/* UMKM Cards Grid */}
@@ -84,7 +93,8 @@ export default function Umkm({ umkm }) {
                                         <div class={`h-full w-full bg-gradient-to-tr flex items-center justify-center text-white ${
                                             u.kategori?.includes('makanan') ? 'from-amber-500 to-orange-400' :
                                             u.kategori?.includes('minuman') ? 'from-sky-500 to-indigo-400' :
-                                            u.kategori?.includes('kerajinan') ? 'from-emerald-500 to-teal-400' : 'from-slate-500 to-slate-400'
+                                            u.kategori?.includes('kerajinan') ? 'from-emerald-500 to-teal-400' :
+                                            u.kategori?.includes('pertanian') ? 'from-emerald-600 to-green-500' : 'from-slate-500 to-slate-400'
                                         }`}>
                                             <Store class="h-12 w-12 opacity-80" />
                                         </div>
@@ -99,23 +109,37 @@ export default function Umkm({ umkm }) {
                                     <span class="text-xs text-slate-500 block">Pemilik: <strong class="text-slate-800">{u.pemilik}</strong></span>
                                 </div>
 
-                                <p class="mt-3 text-xs text-slate-600 leading-relaxed">{u.deskripsi}</p>
-
-                                {u.alamat && (
-                                    <p class="mt-2 text-xs text-slate-400 flex items-center gap-1">
-                                        <MapPin class="h-3.5 w-3.5 text-sky-600 shrink-0" />
-                                        <span>{u.alamat}</span>
-                                    </p>
-                                )}
-
-                                <div class="mt-4">
-                                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Produk Unggulan:</span>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        {(Array.isArray(u.produk) ? u.produk : []).map((p, pIdx) => (
-                                            <span key={pIdx} class="bg-slate-50 text-slate-600 rounded-lg px-2.5 py-1 text-[10px] font-semibold border border-slate-100">{p}</span>
-                                        ))}
+                                {(u.alamat || u.link_maps) && (
+                                    <div class="mt-3.5 flex items-center justify-between gap-2 bg-sky-50/60 p-2.5 rounded-xl border border-sky-100/80">
+                                        <div class="flex items-center gap-1.5 min-w-0 text-xs text-slate-700">
+                                            <MapPin class="h-4 w-4 text-sky-600 shrink-0" />
+                                            <span class="truncate font-semibold">{u.alamat || 'Desa Banyuurip'}</span>
+                                        </div>
+                                        {u.link_maps ? (
+                                            <a 
+                                                href={u.link_maps}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-700 hover:text-sky-800 shrink-0 bg-white px-2.5 py-1.5 rounded-lg border border-sky-200 shadow-2xs hover:bg-sky-50 transition-colors"
+                                                title="Buka Lokasi di Google Maps"
+                                            >
+                                                <span>Google Maps</span>
+                                                <ExternalLink class="h-3 w-3" />
+                                            </a>
+                                        ) : (
+                                            <a 
+                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(u.nama + ' ' + (u.alamat || '') + ' Banyuurip Boyolali')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-700 hover:text-sky-800 shrink-0 bg-white px-2.5 py-1.5 rounded-lg border border-sky-200 shadow-2xs hover:bg-sky-50 transition-colors"
+                                                title="Cari Lokasi di Google Maps"
+                                            >
+                                                <span>Cari Maps</span>
+                                                <ExternalLink class="h-3 w-3" />
+                                            </a>
+                                        )}
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import MainLayout from '../Layouts/MainLayout';
 import { 
@@ -25,47 +25,94 @@ import {
 } from 'lucide-react';
 
 export default function Home({ stats, berita }) {
+    const heroImages = [
+        '/images/hero/hero1.jpg',
+        '/images/hero/hero2.jpg',
+        '/images/hero/hero3.jpg',
+    ];
+
+    const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentHeroIdx((prev) => (prev + 1) % heroImages.length);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <MainLayout>
             <Head title="Beranda Utama - Desa Banyuurip" />
 
-            {/* Ocean Banyu Hero Section */}
-            <div class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-sky-950 to-blue-950 text-white">
-                {/* Background Water Wave Glow Effects */}
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.25),transparent_60%)] animate-pulse-glow"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(2,132,199,0.2),transparent_50%)]"></div>
+            {/* Dynamic Hero Section with Ultra-Smooth Background Carousel */}
+            <div class="relative overflow-hidden bg-slate-950 text-white min-h-[540px] flex flex-col justify-center">
                 
-                <div class="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+                {/* Background Carousel Images with Ultra-Smooth Crossfade & Ken Burns Slow Zoom */}
+                {heroImages.map((img, idx) => {
+                    const isActive = idx === currentHeroIdx;
+                    return (
+                        <div
+                            key={img}
+                            class={`absolute inset-0 transform-gpu transition-all duration-[2200ms] ease-in-out ${
+                                isActive ? 'opacity-100 z-1 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+                            }`}
+                        >
+                            <img 
+                                src={img} 
+                                alt={`Desa Banyuurip ${idx + 1}`} 
+                                class={`h-full w-full object-cover object-center transform-gpu transition-transform duration-[7000ms] ease-out ${
+                                    isActive ? 'scale-100' : 'scale-110'
+                                }`} 
+                            />
+                        </div>
+                    );
+                })}
+
+                {/* Balanced Tint & Gradient Overlay for optimal photo brightness + text contrast */}
+                <div class="absolute inset-0 bg-slate-950/35 z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/20 to-slate-950/70 z-10"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.15),transparent_60%)] z-10"></div>
+
+                <div class="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 flex flex-col items-center text-center z-20">
                     <div class="animate-float">
-                        <span class="inline-flex items-center gap-2 rounded-full bg-sky-500/15 px-4 py-1.5 text-xs font-semibold text-sky-300 border border-sky-400/30 backdrop-blur-md mb-6 shadow-lg shadow-sky-500/10">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-slate-950/70 px-4 py-1.5 text-xs font-bold text-sky-300 border border-sky-400/50 backdrop-blur-md mb-6 shadow-xl shadow-black/50">
                             <Droplets class="h-4 w-4 text-sky-400" />
-                            <span>KKN Tematik Banyuurip Undip 2026</span>
+                            <span>Portal Digital Desa Banyuurip</span>
                         </span>
                     </div>
                     
-                    <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl max-w-4xl leading-tight">
-                        Banyuurip <span class="text-gradient-cyan">Digital Gateway</span>
+                    <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl max-w-4xl leading-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
+                        Banyuurip <span class="text-sky-400 font-extrabold drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Digital Gateway</span>
                     </h1>
                     
-                    <p class="mt-6 text-lg text-sky-100/90 max-w-3xl leading-relaxed">
+                    <p class="mt-6 text-lg text-white font-medium max-w-3xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
                         Pusat digitalisasi profil desa, transparansi tata kelola pemerintahan, potensi pertanian agribisnis, direktori UMKM, serta pelayanan kesehatan masyarakat satu pintu.
                     </p>
                     
                     <div class="mt-10 flex flex-wrap justify-center gap-4">
                         <Link 
-                            href="/kesehatan" 
-                            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-sky-500/30 hover:from-sky-400 hover:to-blue-500 hover:scale-[1.03] transition-all"
-                        >
-                            <HeartPulse class="h-4.5 w-4.5" />
-                            <span>Skrining ISPA RESPIRA</span>
-                        </Link>
-                        <Link 
                             href="/profil" 
-                            class="inline-flex items-center gap-2 rounded-xl bg-sky-900/40 px-6 py-3.5 text-sm font-bold text-sky-100 border border-sky-600/40 backdrop-blur-md hover:bg-sky-800/60 hover:text-white transition-all"
+                            class="inline-flex items-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-500 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-sky-600/30 border border-sky-400/30 backdrop-blur-md hover:scale-[1.03] transition-all cursor-pointer"
                         >
-                            <Compass class="h-4.5 w-4.5 text-sky-300" />
+                            <Compass class="h-4.5 w-4.5 text-sky-200" />
                             <span>Jelajahi Profil Desa</span>
                         </Link>
+                    </div>
+
+                    {/* Carousel Navigation Indicators */}
+                    <div class="mt-12 flex items-center justify-center gap-2.5 z-20">
+                        {heroImages.map((_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setCurrentHeroIdx(idx)}
+                                class={`h-2.5 rounded-full transition-all cursor-pointer ${
+                                    idx === currentHeroIdx 
+                                        ? 'w-8 bg-sky-400 shadow-md shadow-sky-400/50' 
+                                        : 'w-2.5 bg-white/30 hover:bg-white/60'
+                                }`}
+                                title={`Slide ${idx + 1}`}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
@@ -137,8 +184,7 @@ export default function Home({ stats, berita }) {
                                 E-Book RESPIRA (edukasi pencegahan ISPA) & alat skrining risiko pernapasan mandiri secara interaktif.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Keperawatan</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/kesehatan" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>
@@ -156,8 +202,7 @@ export default function Home({ stats, berita }) {
                                 Jadwal tanam & panen komoditas unggulan pertanian/peternakan serta database inventaris aset penunjang.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Agribisnis & Logistik</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/agribisnis" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>
@@ -175,8 +220,7 @@ export default function Home({ stats, berita }) {
                                 Visualisasi grafis anggaran pendapatan dan belanja desa (APBDes) serta panduan alur PBB-P2 online.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Akuntansi Perpajakan</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/keuangan" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>
@@ -194,8 +238,7 @@ export default function Home({ stats, berita }) {
                                 Daftar usaha mikro komoditas desa yang terdata dengan pencatatan pembukuan keuangan kas terstruktur.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Akuntansi</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/umkm" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>
@@ -213,8 +256,7 @@ export default function Home({ stats, berita }) {
                                 Pusat data dokumen Peraturan Desa (Perdes), Surat Keputusan (SK), dan Dokumen Pembangunan Resmi.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Ilmu Hukum</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/keuangan#dokumen" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>
@@ -232,8 +274,7 @@ export default function Home({ stats, berita }) {
                                 Materi interaktif 5S (Seiri, Seiton, Seiso, Seiketsu, Shitsuke) untuk pembiasaan hidup bersih & disiplin.
                             </p>
                         </div>
-                        <div class="mt-6 flex items-center justify-between border-t border-sky-50 pt-4">
-                            <span class="text-xs font-bold text-slate-400">Budaya Jepang</span>
+                        <div class="mt-6 flex items-center justify-end border-t border-sky-50 pt-4">
                             <Link href="/edukasi-5s" class="text-xs font-bold text-sky-700 group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
                                 Buka Fitur <ChevronRight class="h-4 w-4" />
                             </Link>

@@ -40,7 +40,7 @@ export default function BeritaDesa({ berita }) {
                     </span>
                     <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Portal Berita Desa Banyuurip</h1>
                     <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
-                        Pusat informasi publik kegiatan pemerintah desa, program KKN Tematik Undip, penyuluhan kesehatan, serta edukasi masyarakat.
+                        Pusat informasi publik kegiatan pemerintah desa, pembangunan infrastruktur, penyuluhan kesehatan, serta edukasi masyarakat.
                     </p>
                 </div>
             </div>
@@ -176,7 +176,7 @@ export default function BeritaDesa({ berita }) {
                                         Pemerintah Desa Banyuurip, Kecamatan Klego, Kabupaten Boyolali terus berkomitmen meningkatkan kualitas pelayanan publik dan transparansi program kerja desa melalui digitalisasi.
                                     </p>
                                     <p>
-                                        Dalam pelaksanaan program ini, seluruh jajaran perangkat desa bekerja sama dengan tokoh masyarakat, kelembagaan RT/RW, serta Tim KKN Tematik Universitas Diponegoro guna memastikan manfaat kegiatan dapat dirasakan langsung oleh masyarakat luas.
+                                        Dalam pelaksanaan program ini, seluruh jajaran perangkat desa bekerja sama dengan tokoh masyarakat dan kelembagaan RT/RW guna memastikan manfaat kegiatan dapat dirasakan langsung oleh masyarakat luas.
                                     </p>
                                     <p>
                                         Informasi lebih lanjut mengenai kegiatan ini dapat ditanyakan secara langsung di Sekretariat Balai Desa Banyuurip pada jam kerja operasional.

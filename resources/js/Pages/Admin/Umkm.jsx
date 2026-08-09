@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { PlusCircle, Edit3, Trash2, X, Inbox, Store, PhoneCall, MapPin } from 'lucide-react';
+import { PlusCircle, Edit3, Trash2, X, Inbox, Store, PhoneCall, MapPin, ExternalLink } from 'lucide-react';
 
 export default function Umkm({ items }) {
     const [showAddModal, setShowAddModal] = useState(false);
@@ -14,6 +14,7 @@ export default function Umkm({ items }) {
         kategori: 'makanan',
         kontak: '',
         alamat: '',
+        link_maps: '',
         deskripsi: '',
         produk: '',
         gambar: null,
@@ -25,6 +26,7 @@ export default function Umkm({ items }) {
         kategori: 'makanan',
         kontak: '',
         alamat: '',
+        link_maps: '',
         deskripsi: '',
         produk: '',
         gambar: null,
@@ -50,6 +52,7 @@ export default function Umkm({ items }) {
             kategori: item.kategori || 'makanan',
             kontak: item.kontak || '',
             alamat: item.alamat || '',
+            link_maps: item.link_maps || '',
             deskripsi: item.deskripsi || '',
             produk: produkStr,
             gambar: null,
@@ -67,6 +70,7 @@ export default function Umkm({ items }) {
             kategori: editForm.data.kategori,
             kontak: editForm.data.kontak,
             alamat: editForm.data.alamat,
+            link_maps: editForm.data.link_maps,
             deskripsi: editForm.data.deskripsi,
             produk: editForm.data.produk,
             gambar: editForm.data.gambar,
@@ -115,7 +119,7 @@ export default function Umkm({ items }) {
                                     <th scope="col" class="px-6 py-3.5">Pemilik Usaha</th>
                                     <th scope="col" class="px-6 py-3.5">Kategori</th>
                                     <th scope="col" class="px-6 py-3.5">Kontak WhatsApp</th>
-                                    <th scope="col" class="px-6 py-3.5">Alamat Dusun</th>
+                                    <th scope="col" class="px-6 py-3.5">Alamat & Link Maps</th>
                                     <th scope="col" class="px-6 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -136,7 +140,6 @@ export default function Umkm({ items }) {
                                                     </div>
                                                     <div>
                                                         <span class="block font-extrabold">{item.nama}</span>
-                                                        <span class="text-[11px] text-slate-400 font-normal line-clamp-1">{item.deskripsi}</span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -155,7 +158,16 @@ export default function Umkm({ items }) {
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">
-                                                {item.alamat || 'Desa Banyuurip'}
+                                                <span class="block font-medium text-slate-800">{item.alamat || 'Desa Banyuurip'}</span>
+                                                {item.link_maps ? (
+                                                    <a href={item.link_maps} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 hover:text-sky-800 hover:underline mt-0.5">
+                                                        <MapPin class="h-3 w-3" />
+                                                        <span>Buka Google Maps</span>
+                                                        <ExternalLink class="h-3 w-3" />
+                                                    </a>
+                                                ) : (
+                                                    <span class="text-[11px] text-slate-400 italic">Belum ada link maps</span>
+                                                )}
                                             </td>
                                             <td class="px-6 py-4 text-right font-medium">
                                                 <div class="inline-flex gap-2">
@@ -234,6 +246,7 @@ export default function Umkm({ items }) {
                                             <option value="makanan">Makanan & Olahan Kuliner</option>
                                             <option value="minuman">Minuman Segar</option>
                                             <option value="kerajinan">Kerajinan Tangan</option>
+                                            <option value="pertanian">Pertanian & Hasil Tani</option>
                                         </select>
                                     </div>
                                     <div>
@@ -250,37 +263,23 @@ export default function Umkm({ items }) {
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Dusun / RT RW</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Dusun / RT RW (Opsional)</label>
                                     <input 
                                         type="text" 
                                         value={addForm.data.alamat}
                                         onChange={(e) => addForm.setData('alamat', e.target.value)}
-                                        required 
                                         placeholder="Contoh: Dukuh Banyuurip RT 02 / RW 01" 
                                         class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
                                     />
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Produk UMKM</label>
-                                    <textarea 
-                                        value={addForm.data.deskripsi}
-                                        onChange={(e) => addForm.setData('deskripsi', e.target.value)}
-                                        required 
-                                        rows={3} 
-                                        placeholder="Jelaskan secara singkat keunggulan dan rasa produk UMKM ini..." 
-                                        class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Daftar Produk Unggulan (Dipisahkan Koma)</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Link Google Maps (URL / Tautan Lokasi)</label>
                                     <input 
                                         type="text" 
-                                        value={addForm.data.produk}
-                                        onChange={(e) => addForm.setData('produk', e.target.value)}
-                                        required 
-                                        placeholder="Contoh: Keripik Balado, Singkong Keju, Stik Bawang" 
+                                        value={addForm.data.link_maps}
+                                        onChange={(e) => addForm.setData('link_maps', e.target.value)}
+                                        placeholder="Contoh: https://maps.app.goo.gl/xxx atau https://goo.gl/maps/..." 
                                         class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
                                     />
                                 </div>
@@ -354,6 +353,7 @@ export default function Umkm({ items }) {
                                             <option value="makanan">Makanan & Olahan Kuliner</option>
                                             <option value="minuman">Minuman Segar</option>
                                             <option value="kerajinan">Kerajinan Tangan</option>
+                                            <option value="pertanian">Pertanian & Hasil Tani</option>
                                         </select>
                                     </div>
                                     <div>
@@ -369,34 +369,23 @@ export default function Umkm({ items }) {
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Dusun / RT RW</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Dusun / RT RW (Opsional)</label>
                                     <input 
                                         type="text" 
                                         value={editForm.data.alamat}
                                         onChange={(e) => editForm.setData('alamat', e.target.value)}
-                                        required 
+                                        placeholder="Contoh: Dukuh Banyuurip RT 02 / RW 01" 
                                         class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
                                     />
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Deskripsi Produk UMKM</label>
-                                    <textarea 
-                                        value={editForm.data.deskripsi}
-                                        onChange={(e) => editForm.setData('deskripsi', e.target.value)}
-                                        required 
-                                        rows={3} 
-                                        class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Daftar Produk Unggulan (Dipisahkan Koma)</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Link Google Maps (URL / Tautan Lokasi)</label>
                                     <input 
                                         type="text" 
-                                        value={editForm.data.produk}
-                                        onChange={(e) => editForm.setData('produk', e.target.value)}
-                                        required 
+                                        value={editForm.data.link_maps}
+                                        onChange={(e) => editForm.setData('link_maps', e.target.value)}
+                                        placeholder="Contoh: https://maps.app.goo.gl/xxx atau https://goo.gl/maps/..." 
                                         class="block w-full rounded-xl border border-slate-200 bg-white py-2.5 px-3.5 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600" 
                                     />
                                 </div>

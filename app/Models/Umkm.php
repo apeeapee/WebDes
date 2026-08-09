@@ -8,7 +8,7 @@ class Umkm extends Model
 {
     protected $table = 'umkms';
     protected $fillable = [
-        'nama', 'pemilik', 'kategori', 'kontak', 'alamat', 
+        'nama', 'pemilik', 'kategori', 'kontak', 'alamat', 'link_maps', 
         'deskripsi', 'omzet_bulanan', 'biaya_produksi', 'laba_bersih', 
         'pencatatan', 'produk', 'gambar'
     ];

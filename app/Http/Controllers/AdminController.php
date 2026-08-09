@@ -461,26 +461,28 @@ class AdminController extends Controller
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'deskripsi' => 'required|string',
-            'produk' => 'required|string',
+            'alamat' => 'nullable|string',
+            'link_maps' => 'nullable|string|max:1000',
+            'deskripsi' => 'nullable|string',
+            'produk' => 'nullable|string',
             'omzet' => 'nullable|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
-        $produkArray = array_map('trim', explode(',', $data['produk']));
+        $produkArray = !empty($data['produk']) ? array_map('trim', explode(',', $data['produk'])) : [];
 
         $umkmData = [
             'nama' => $data['nama'],
             'pemilik' => $data['pemilik'],
             'kategori' => strtolower($data['kategori']),
             'kontak' => $data['kontak'],
-            'alamat' => $data['alamat'],
-            'deskripsi' => $data['deskripsi'],
-            'omzet_bulanan' => '',
-            'biaya_produksi' => '',
-            'laba_bersih' => '',
-            'pencatatan_keuangan' => 'Laporan Mandiri',
+            'alamat' => $data['alamat'] ?? null,
+            'link_maps' => $data['link_maps'] ?? null,
+            'deskripsi' => $data['deskripsi'] ?? null,
+            'omzet_bulanan' => null,
+            'biaya_produksi' => null,
+            'laba_bersih' => null,
+            'pencatatan' => 'Laporan Mandiri',
             'produk' => $produkArray,
         ];
 
@@ -505,22 +507,24 @@ class AdminController extends Controller
             'pemilik' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
             'kontak' => 'required|string|max:255',
-            'alamat' => 'required|string',
-            'deskripsi' => 'required|string',
-            'produk' => 'required|string',
+            'alamat' => 'nullable|string',
+            'link_maps' => 'nullable|string|max:1000',
+            'deskripsi' => 'nullable|string',
+            'produk' => 'nullable|string',
             'omzet' => 'nullable|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
-        $produkArray = array_map('trim', explode(',', $data['produk']));
+        $produkArray = !empty($data['produk']) ? array_map('trim', explode(',', $data['produk'])) : [];
 
         $umkmData = [
             'nama' => $data['nama'],
             'pemilik' => $data['pemilik'],
             'kategori' => strtolower($data['kategori']),
             'kontak' => $data['kontak'],
-            'alamat' => $data['alamat'],
-            'deskripsi' => $data['deskripsi'],
+            'alamat' => $data['alamat'] ?? null,
+            'link_maps' => $data['link_maps'] ?? null,
+            'deskripsi' => $data['deskripsi'] ?? null,
             'produk' => $produkArray,
         ];
 

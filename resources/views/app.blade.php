@@ -7,7 +7,7 @@
     
     <!-- Meta SEO -->
     <meta name="description" content="Website Resmi Desa Banyuurip, Kecamatan Klego, Kabupaten Boyolali. Portal Digital Informasi Profil, Potensi Ekonomi, UMKM, dan Layanan Kesehatan Satu Pintu.">
-    <meta name="keywords" content="Banyuurip, Boyolali, Desa Banyuurip, KKN Undip, RESPIRA, UMKM Banyuurip, APBDes Banyuurip">
+    <meta name="keywords" content="Banyuurip, Boyolali, Desa Banyuurip, RESPIRA, UMKM Banyuurip, APBDes Banyuurip">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

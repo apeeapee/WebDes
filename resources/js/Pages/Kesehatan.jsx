@@ -185,7 +185,7 @@ export default function Kesehatan({ ebook_chapters }) {
 
                             <div class="mt-8 border-t border-sky-100 pt-4 flex items-center justify-between text-xs font-bold text-slate-400">
                                 <span>Sumber: Pedoman Kementerian Kesehatan RI</span>
-                                <span>Disusun oleh Keperawatan Tim KKN Undip</span>
+                                <span>Layanan Kesehatan Desa Banyuurip</span>
                             </div>
                         </div>
                     </div>

@@ -437,6 +437,7 @@ class VillageController extends Controller
             'kategoriLabel' => $kategoriLabels[strtolower($item->kategori)] ?? ucfirst($item->kategori),
             'kontak' => $item->kontak,
             'alamat' => $item->alamat,
+            'link_maps' => $item->link_maps,
             'deskripsi' => $item->deskripsi,
             'omzet' => $item->omzet_bulanan,
             'biaya' => $item->biaya_produksi,

@@ -424,13 +424,13 @@ export default function MainLayout({ children }) {
                             </ul>
                         </div>
 
-                        {/* KKN UNDIP 2026 Badge */}
+                        {/* Digital Badge */}
                         <div class="space-y-3">
                             <h4 class="text-xs font-bold text-white uppercase tracking-wider">Pengembangan Digital</h4>
                             <div class="rounded-2xl bg-sky-900/40 p-4 border border-sky-700/40 backdrop-blur-md">
-                                <span class="text-xs font-bold text-sky-300 block">KKN Tematik Undip 2026</span>
+                                <span class="text-xs font-bold text-sky-300 block">Pemerintah Desa Banyuurip</span>
                                 <p class="text-[11px] text-sky-200/70 mt-1">
-                                    Diinisiasi bersama oleh Tim II KKN Universitas Diponegoro untuk mendorong kemandirian digital Desa Banyuurip.
+                                    Portal resmi terpadu guna mendorong kemandirian digital dan transparansi publik Desa Banyuurip.
                                 </p>
                             </div>
                         </div>
