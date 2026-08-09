@@ -37,12 +37,20 @@ if (!empty($results['laravel'])) {
     }
 }
 
-// 3. Storage link
+// 3. Storage link (skip if symlink disabled)
 if (!empty($results['db'])) {
     $target = __DIR__ . '/../storage/app/public';
     $shortcut = __DIR__ . '/storage';
     if (!file_exists($shortcut)) {
-        @symlink($target, $shortcut);
+        if (function_exists('symlink')) {
+            @symlink($target, $shortcut);
+        } else {
+            // Symlink disabled, create .htaccess redirect instead
+            @mkdir($shortcut, 0755, true);
+            file_put_contents($shortcut . '/.htaccess', 
+                "RewriteEngine On\nRewriteRule ^(.*)$ /storage-serve.php?file=$1 [L,QSA]\n"
+            );
+        }
     }
     $results['storage'] = true;
 }
