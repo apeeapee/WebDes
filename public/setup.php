@@ -1,88 +1,140 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 ini_set('max_execution_time', 600);
 set_time_limit(600);
 
-// ========== JALANKAN SEMUA PROSES DULU (SEBELUM OUTPUT) ==========
+// Force debug mode for this setup script
+putenv('APP_DEBUG=true');
+$_ENV['APP_DEBUG'] = 'true';
+$_SERVER['APP_DEBUG'] = 'true';
+
 $results = [];
+$results['php'] = phpversion();
 
 // 1. Load Laravel
 try {
     require __DIR__ . '/../vendor/autoload.php';
     $app = require_once __DIR__ . '/../bootstrap/app.php';
+    
+    // Force debug mode in config
+    $app['config']->set('app.debug', true);
+    
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
     $kernel->bootstrap();
-    $results['laravel'] = ['status' => true, 'msg' => 'Laravel berhasil dimuat!'];
+    
+    // Force debug mode again after bootstrap
+    config(['app.debug' => true]);
+    
+    $results['laravel'] = true;
 } catch (\Throwable $e) {
-    $results['laravel'] = ['status' => false, 'msg' => $e->getMessage()];
+    $results['laravel'] = false;
+    $results['laravel_error'] = $e->getMessage();
 }
 
 // 2. DB Connection
-if ($results['laravel']['status']) {
+if (!empty($results['laravel'])) {
     try {
         \Illuminate\Support\Facades\DB::connection()->getPdo();
-        $results['db'] = ['status' => true, 'msg' => 'Database terhubung!'];
+        $results['db'] = true;
     } catch (\Throwable $e) {
-        $results['db'] = ['status' => false, 'msg' => $e->getMessage()];
+        $results['db'] = false;
+        $results['db_error'] = $e->getMessage();
     }
 }
 
 // 3. Storage link
-if (isset($results['db']) && $results['db']['status']) {
+if (!empty($results['db'])) {
     $target = __DIR__ . '/../storage/app/public';
     $shortcut = __DIR__ . '/storage';
     if (!file_exists($shortcut)) {
         @symlink($target, $shortcut);
     }
-    $results['storage'] = ['status' => true, 'msg' => 'Storage link diproses!'];
+    $results['storage'] = true;
 }
 
 // 4. Migration
-if (isset($results['db']) && $results['db']['status']) {
+if (!empty($results['db'])) {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $results['migrate'] = ['status' => true, 'msg' => 'Migrasi berhasil!', 'output' => \Illuminate\Support\Facades\Artisan::output()];
+        // Use the migrator directly to avoid exception handler issues
+        $migrator = $app->make('migrator');
+        $migrator->setOutput(new \Symfony\Component\Console\Output\BufferedOutput());
+        
+        if (!$migrator->repositoryExists()) {
+            $app->make('migration.repository')->createRepository();
+        }
+        
+        $migrator->run(database_path('migrations'));
+        $results['migrate'] = true;
+        $results['migrate_output'] = $migrator->getOutput()->fetch();
     } catch (\Throwable $e) {
-        $results['migrate'] = ['status' => false, 'msg' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()];
+        $results['migrate'] = false;
+        $results['migrate_error'] = $e->getMessage();
+        $results['migrate_file'] = basename($e->getFile()) . ':' . $e->getLine();
     }
 }
 
 // 5. Seeder
-if (isset($results['migrate']) && $results['migrate']['status']) {
+if (!empty($results['migrate'])) {
     try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $results['seed'] = ['status' => true, 'msg' => 'Data desa berhasil dimasukkan!', 'output' => \Illuminate\Support\Facades\Artisan::output()];
+        $seeder = $app->make(\Database\Seeders\DatabaseSeeder::class);
+        $seeder->run();
+        $results['seed'] = true;
     } catch (\Throwable $e) {
-        $results['seed'] = ['status' => false, 'msg' => $e->getMessage()];
+        $results['seed'] = false;
+        $results['seed_error'] = $e->getMessage();
     }
 }
 
-// ========== TAMPILKAN HASIL ==========
+// ========== OUTPUT ==========
+header('Content-Type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>
 <html><head><title>Setup Desa Banyuurip</title></head>
 <body style="margin:0;padding:0;background:#f8fafc;">
 <div style="font-family:system-ui,sans-serif;max-width:700px;margin:40px auto;padding:24px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;">
 <h2 style="color:#0284c7;margin-top:0;">🔧 Setup Otomatis Desa Banyuurip</h2>
-<p>📌 <b>PHP:</b> <?= phpversion() ?></p>
+<p>📌 <b>PHP:</b> <?= $results['php'] ?></p>
 
-<?php foreach ($results as $key => $r): ?>
-    <?php if ($r['status']): ?>
-        <p style="color:#16a34a;">✅ <b><?= htmlspecialchars($r['msg']) ?></b></p>
-        <?php if (isset($r['output'])): ?>
-            <pre style="background:#f8fafc;padding:12px;border-radius:8px;font-size:11px;border:1px solid #e2e8f0;overflow:auto;max-height:200px;"><?= htmlspecialchars($r['output']) ?></pre>
+<?php if (!empty($results['laravel'])): ?>
+    <p style="color:#16a34a;">✅ Laravel berhasil dimuat!</p>
+<?php else: ?>
+    <p style="color:#dc2626;">❌ Laravel Error: <?= htmlspecialchars($results['laravel_error'] ?? 'Unknown') ?></p>
+<?php endif; ?>
+
+<?php if (isset($results['db'])): ?>
+    <?php if ($results['db']): ?>
+        <p style="color:#16a34a;">✅ Database terhubung!</p>
+    <?php else: ?>
+        <p style="color:#dc2626;">❌ DB Error: <?= htmlspecialchars($results['db_error'] ?? 'Unknown') ?></p>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if (!empty($results['storage'])): ?>
+    <p style="color:#16a34a;">✅ Storage link diproses!</p>
+<?php endif; ?>
+
+<?php if (isset($results['migrate'])): ?>
+    <?php if ($results['migrate']): ?>
+        <p style="color:#16a34a;">✅ Migrasi database berhasil!</p>
+        <?php if (!empty($results['migrate_output'])): ?>
+            <pre style="background:#f8fafc;padding:12px;border-radius:8px;font-size:11px;border:1px solid #e2e8f0;overflow:auto;max-height:200px;"><?= htmlspecialchars($results['migrate_output']) ?></pre>
         <?php endif; ?>
     <?php else: ?>
-        <p style="color:#dc2626;">❌ <b>Error (<?= $key ?>):</b> <?= htmlspecialchars($r['msg']) ?></p>
-        <?php if (isset($r['file'])): ?>
-            <p style="color:#94a3b8;font-size:11px;">File: <?= htmlspecialchars($r['file']) ?> Line: <?= $r['line'] ?></p>
-        <?php endif; ?>
+        <p style="color:#dc2626;">❌ Migration Error: <?= htmlspecialchars($results['migrate_error'] ?? 'Unknown') ?></p>
+        <p style="color:#94a3b8;font-size:11px;"><?= htmlspecialchars($results['migrate_file'] ?? '') ?></p>
     <?php endif; ?>
-<?php endforeach; ?>
+<?php endif; ?>
+
+<?php if (isset($results['seed'])): ?>
+    <?php if ($results['seed']): ?>
+        <p style="color:#16a34a;">✅ Data desa berhasil dimasukkan!</p>
+    <?php else: ?>
+        <p style="color:#dc2626;">❌ Seeder Error: <?= htmlspecialchars($results['seed_error'] ?? 'Unknown') ?></p>
+    <?php endif; ?>
+<?php endif; ?>
 
 <hr style="border:0;border-top:1px solid #e2e8f0;margin:24px 0;"/>
 <p style="text-align:center;"><a href="/" style="background:#0284c7;color:white;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:bold;">🎉 Buka Website Desa Banyuurip</a></p>
-<p style="text-align:center;color:#94a3b8;font-size:12px;">⚠️ Setelah berhasil, hapus file setup.php demi keamanan.</p>
 </div>
 </body></html>
