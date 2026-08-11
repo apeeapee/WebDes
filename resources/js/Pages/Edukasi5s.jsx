@@ -62,7 +62,7 @@ export default function Edukasi5s({ konsep5s }) {
                         <Sparkles class="h-3.5 w-3.5" />
                         Program Kebudayaan & Kedisiplinan Kerja
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Digitalisasi Budaya 5S Jepang</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Digitalisasi Budaya 5S Jepang</h1>
                     <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
                         Penerapan prinsip Seiri, Seiton, Seiso, Seiketsu, dan Shitsuke untuk peningkatan kedisiplinan & kebersihan lingkungan kerja kantor desa.
                     </p>
@@ -80,7 +80,7 @@ export default function Edukasi5s({ konsep5s }) {
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {konsep5s.map((k, idx) => {
                             const IconComp = iconMap[idx] || Filter;
                             return (

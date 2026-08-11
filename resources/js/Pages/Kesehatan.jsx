@@ -127,7 +127,7 @@ export default function Kesehatan({ ebook_chapters }) {
                         <Activity class="h-3.5 w-3.5" />
                         Program Kesehatan Keperawatan
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Pusat Layanan Kesehatan RESPIRA</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Pusat Layanan Kesehatan RESPIRA</h1>
                     <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
                         Modul edukasi terintegrasi <strong>E-Book RESPIRA</strong> dan aplikasi <strong>Skrining Mandiri ISPA</strong> untuk pencegahan infeksi saluran pernapasan akut Warga Banyuurip.
                     </p>
@@ -328,14 +328,14 @@ export default function Kesehatan({ ebook_chapters }) {
                                         </div>
                                     </div>
 
-                                    <div class="mt-8 pt-6 border-t border-sky-100 flex items-center justify-between">
+                                    <div class="mt-8 pt-6 border-t border-sky-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
                                         <button onClick={() => setScreeningStep(1)} class="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer">
                                             <ArrowLeft class="h-4 w-4" /> Kembali
                                         </button>
                                         
                                         <button 
                                             onClick={calculateRisk} 
-                                            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:scale-105 transition-all cursor-pointer"
+                                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:scale-105 transition-all cursor-pointer"
                                         >
                                             <span>Selesai & Analisis Risiko</span>
                                             <CheckCircle class="h-4 w-4" />

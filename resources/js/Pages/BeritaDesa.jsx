@@ -38,7 +38,7 @@ export default function BeritaDesa({ berita }) {
                         <Newspaper class="h-3.5 w-3.5" />
                         Kabar & Publikasi Resmi Desa
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Portal Berita Desa Banyuurip</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Portal Berita Desa Banyuurip</h1>
                     <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
                         Pusat informasi publik kegiatan pemerintah desa, pembangunan infrastruktur, penyuluhan kesehatan, serta edukasi masyarakat.
                     </p>
@@ -145,9 +145,9 @@ export default function BeritaDesa({ berita }) {
 
                 {/* News Detail Reader Modal */}
                 {activeNewsModal && (
-                    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+                    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs">
                         <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 max-h-[90vh] flex flex-col">
-                            <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white p-6 flex items-start justify-between">
+                            <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white p-4 sm:p-6 flex items-start justify-between">
                                 <div>
                                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-sky-300 bg-sky-500/20 px-3 py-1 rounded-full border border-sky-400/30">
                                         {activeNewsModal.kategori}
@@ -165,7 +165,7 @@ export default function BeritaDesa({ berita }) {
                                 </button>
                             </div>
 
-                            <div class="p-6 sm:p-8 space-y-6 overflow-y-auto text-slate-700 text-sm leading-relaxed">
+                            <div class="p-4 sm:p-6 md:p-8 space-y-6 overflow-y-auto text-slate-700 text-sm leading-relaxed">
                                 <div class="p-4 rounded-2xl bg-sky-50 border border-sky-100 text-sky-900 font-medium text-xs leading-relaxed">
                                     <strong class="font-bold block text-sky-950 mb-1">Ringkasan Kegiatan:</strong>
                                     {activeNewsModal.ringkasan}

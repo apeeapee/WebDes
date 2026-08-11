@@ -39,7 +39,7 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                             <ShieldCheck class="h-3.5 w-3.5" />
                             Standardisasi KPK RI & Kemendes
                         </span>
-                        <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Pusat Integrasi Desa Antikorupsi</h1>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Pusat Integrasi Desa Antikorupsi</h1>
                         <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
                             Pemenuhan 18 Indikator KPK RI yang terbagi ke dalam 5 Pilar Utama tata kelola pemerintahan bersih dan bebas pungli di Desa Banyuurip.
                         </p>
@@ -54,14 +54,14 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                     <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full border border-sky-200">
                         Matriks Pemenuhan 18 Indikator KPK RI
                     </span>
-                    <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">5 Pilar Utama Desa Antikorupsi</h2>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl">5 Pilar Utama Desa Antikorupsi</h2>
                     <p class="text-xs text-slate-600 leading-relaxed">
                         Klik pada salah satu <strong>Kartu Pilar</strong> di bawah ini untuk melihat daftar indikator lengkap dan mengakses bukti dokumen Drive resmi.
                     </p>
                 </div>
 
                 {/* 5 Pilar Cards Grid */}
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {(pilarKpk || []).map((pilar, idx) => {
                         const IconComp = iconMap[pilar.icon] || FileText;
                         const pilarDocs = (antikorupsi || []).filter(doc => doc.kategori === pilar.kunci);
@@ -99,10 +99,10 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
 
                 {/* Interactive Modal for Selected Pillar */}
                 {selectedPilarModal && (
-                    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+                    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs">
                         <div class="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 max-h-[90vh] flex flex-col">
                             {/* Modal Header */}
-                            <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white p-6 sm:p-8 flex items-start justify-between">
+                            <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white p-4 sm:p-6 md:p-8 flex items-start justify-between">
                                 <div class="space-y-2">
                                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-sky-300 bg-sky-500/20 px-3 py-1 rounded-full border border-sky-400/30">
                                         {selectedPilarModal.pilar.pilar || selectedPilarModal.pilar.kunci}
@@ -123,7 +123,7 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                             </div>
 
                             {/* Modal Content / List of Indicators & Drive Links */}
-                            <div class="p-6 sm:p-8 space-y-4 overflow-y-auto bg-slate-50/50">
+                            <div class="p-4 sm:p-6 md:p-8 space-y-4 overflow-y-auto bg-slate-50/50">
                                 {(selectedPilarModal.pilar.indikator_list || []).map((ind) => {
                                     // Match db doc if available
                                     const matchedDoc = selectedPilarModal.docs.find(d => 

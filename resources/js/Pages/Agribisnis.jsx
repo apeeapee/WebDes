@@ -40,7 +40,7 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                         <Sprout class="h-3.5 w-3.5" />
                         Data BPP Klego & Logistik Balai Desa
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Potensi Agribisnis & Katalog Inventaris</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Potensi Agribisnis & Katalog Inventaris</h1>
                     <p class="mt-3 text-sky-100/90 max-w-3xl text-base leading-relaxed">
                         Data resmi potensi pertanian BPP Kecamatan Klego, daftar 9 Kelompok Tani (Gapoktan Subur Makmur), serta katalog peminjaman barang & aset Balai Desa Banyuurip.
                     </p>
@@ -139,11 +139,13 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                                 Pola tanam yang diterapkan secara berkelanjutan di Desa Banyuurip berdasarkan kondisi tanah dan musim:
                             </p>
 
-                            <div class="mt-6 flex items-center justify-between bg-sky-950/60 p-4 rounded-2xl border border-sky-700/50 text-xs font-extrabold">
+                            <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 bg-sky-950/60 p-3 sm:p-4 rounded-2xl border border-sky-700/50 text-xs font-extrabold">
                                 <span class="text-sky-300">Musim 1: Padi</span>
-                                <ArrowRight class="h-4 w-4 text-sky-400" />
+                                <ArrowRight class="h-4 w-4 text-sky-400 hidden sm:block" />
+                                <span class="text-sky-500 sm:hidden text-[10px]">▼</span>
                                 <span class="text-sky-300">Musim 2: Padi</span>
-                                <ArrowRight class="h-4 w-4 text-sky-400" />
+                                <ArrowRight class="h-4 w-4 text-sky-400 hidden sm:block" />
+                                <span class="text-sky-500 sm:hidden text-[10px]">▼</span>
                                 <span class="text-sky-300">Musim 3: Jagung / Kacang Tanah</span>
                             </div>
                         </div>
@@ -166,7 +168,7 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full border border-sky-200">
                             Potensi Unggulan
                         </span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Komoditas Utama Desa Banyuurip</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Komoditas Utama Desa Banyuurip</h2>
                         <p class="mt-4 text-slate-600 text-sm">
                             Hasil komoditas sektor tanaman pangan, hortikultura, dan peternakan utama yang dikelola oleh masyarakat Desa Banyuurip.
                         </p>
@@ -224,7 +226,7 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3 py-1 rounded-full border border-sky-200">Struktur Kelembagaan Petani</span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Daftar 9 Kelompok Tani (Poktan)</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Daftar 9 Kelompok Tani (Poktan)</h2>
                         <p class="mt-4 text-slate-600 text-sm">
                             Sembilan kelompok tani aktif yang tersebar di wilayah Dukuh Tlogosari, Banyuurip, Ngijo, Palemrejo, Ngeliyangan, dan Jlegong.
                         </p>
@@ -348,13 +350,13 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3.5 py-1 rounded-full border border-sky-200">
                             Prosedur Resmi
                         </span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Alur Peminjaman Aset Desa</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Alur Peminjaman Aset Desa</h2>
                         <p class="mt-4 text-slate-600 text-sm">
                             Tata cara peminjaman aula balai desa, bangku, sound system, mesin pemotong rumput, alat musik, hingga mobil siaga desa.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {(sop_peminjaman || []).map((sop) => (
                             <div key={sop.langkah} class="rounded-3xl bg-white p-6 border border-sky-100 shadow-sm banyu-hover-card flex flex-col justify-between relative">
                                 <div>
@@ -387,7 +389,7 @@ export default function Agribisnis({ komoditas, stats, luas_lahan_breakdown, kel
                             </div>
                         </div>
 
-                        <div class="lg:col-span-6 rounded-3xl bg-gradient-to-r from-slate-900 via-sky-950 to-blue-950 p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 border border-sky-400/30">
+                        <div class="lg:col-span-6 rounded-3xl bg-gradient-to-r from-slate-900 via-sky-950 to-blue-950 p-5 sm:p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 border border-sky-400/30">
                             <div class="flex items-center gap-4">
                                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0">
                                     <Phone class="h-6 w-6" />

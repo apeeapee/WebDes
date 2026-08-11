@@ -146,7 +146,7 @@ export default function Keuangan({
                         <Coins class="h-3.5 w-3.5" />
                         Transparansi Publik & Pajak Daerah
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Transparansi APBDes & Panduan PBB SiPAD</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Transparansi APBDes & Panduan PBB SiPAD</h1>
                     <p class="mt-3 text-sky-100/90 max-w-3xl text-base leading-relaxed">
                         Laporan realisasi Anggaran Pendapatan dan Belanja Desa (APBDes) 2026 serta panduan resmi pembayaran Pajak Bumi dan Bangunan (PBB-P2) via SiPAD Kabupaten Boyolali.
                     </p>
@@ -156,10 +156,10 @@ export default function Keuangan({
             <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 space-y-24">
                 
                 {/* 1. Executive Summary Cards */}
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     <div class="rounded-3xl bg-white p-6 shadow-sm border border-sky-100 banyu-hover-card">
                         <span class="text-xs font-bold text-sky-600 uppercase tracking-wider block">Total Anggaran Pendapatan</span>
-                        <span class="text-xl font-extrabold text-slate-900 block mt-1">{formatRupiah(summary_stats?.total_anggaran_pendapatan || 1593006000)}</span>
+                        <span class="text-base sm:text-xl font-extrabold text-slate-900 block mt-1">{formatRupiah(summary_stats?.total_anggaran_pendapatan || 1593006000)}</span>
                         <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 mt-2 inline-block">
                             Realisasi: {formatRupiah(summary_stats?.total_realisasi_pendapatan || 855122371)}
                         </span>
@@ -167,7 +167,7 @@ export default function Keuangan({
 
                     <div class="rounded-3xl bg-white p-6 shadow-sm border border-sky-100 banyu-hover-card">
                         <span class="text-xs font-bold text-blue-600 uppercase tracking-wider block">Total Anggaran Belanja</span>
-                        <span class="text-xl font-extrabold text-slate-900 block mt-1">{formatRupiah(summary_stats?.total_anggaran_belanja || 1639570180)}</span>
+                        <span class="text-base sm:text-xl font-extrabold text-slate-900 block mt-1">{formatRupiah(summary_stats?.total_anggaran_belanja || 1639570180)}</span>
                         <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 mt-2 inline-block">
                             Realisasi: {formatRupiah(summary_stats?.total_realisasi_belanja || 583536290)}
                         </span>
@@ -181,7 +181,7 @@ export default function Keuangan({
 
                     <div class="rounded-3xl bg-white p-6 shadow-sm border border-sky-100 banyu-hover-card">
                         <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block">Surplus Realisasi Saat Ini</span>
-                        <span class="text-xl font-extrabold text-emerald-900 block mt-1">{formatRupiah(summary_stats?.surplus_realisasi || 271586081)}</span>
+                        <span class="text-base sm:text-xl font-extrabold text-emerald-900 block mt-1">{formatRupiah(summary_stats?.surplus_realisasi || 271586081)}</span>
                         <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 mt-2 inline-block">
                             Surplus Berjalan
                         </span>
@@ -265,14 +265,14 @@ export default function Keuangan({
 
                             return (
                                 <div key={idx} class="space-y-2">
-                                    <div class="flex items-center justify-between text-xs font-extrabold">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-extrabold gap-1">
                                         <span class="text-slate-800 flex items-center gap-2">
                                             {item.sumber}
                                             <span class="text-[10px] font-semibold text-slate-400">({item.kategori})</span>
                                         </span>
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-slate-500">{formatRupiah(item.realisasi)} / {formatRupiah(item.anggaran)}</span>
-                                            <span class={`px-2.5 py-0.5 rounded-full text-[10px] font-black text-white ${barColor}`}>
+                                        <div class="flex items-center gap-2 sm:gap-3">
+                                            <span class="text-slate-500 text-[10px] sm:text-xs truncate">{formatRupiah(item.realisasi)} / {formatRupiah(item.anggaran)}</span>
+                                            <span class={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-black text-white ${barColor} shrink-0`}>
                                                 {pct}%
                                             </span>
                                         </div>
@@ -303,8 +303,8 @@ export default function Keuangan({
                         </span>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
+                    <div class="overflow-x-auto -mx-4 sm:mx-0">
+                        <table class="w-full text-left text-xs min-w-[600px]">
                             <thead>
                                 <tr class="bg-sky-900 text-white font-extrabold uppercase tracking-wider">
                                     <th class="py-3.5 px-4 rounded-l-xl">Rincian Anggaran & Belanja</th>
@@ -385,7 +385,7 @@ export default function Keuangan({
                         <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full border border-emerald-200 inline-block mb-3">
                             SiPAD KABUPATEN BOYOLALI
                         </span>
-                        <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Panduan Pembayaran PBB Online</h2>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Panduan Pembayaran PBB Online</h2>
                         <p class="mt-4 text-slate-600 text-sm">
                             Kemudahan cek NJOP, cek tagihan, dan bayar PBB-P2 secara online tanpa harus datang ke kantor melalui portal <strong class="text-sky-700">sipad.id</strong>.
                         </p>
@@ -469,7 +469,7 @@ export default function Keuangan({
                     </div>
 
                     {/* Kontak Resmi BKD Boyolali Box */}
-                    <div class="mt-12 p-8 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+                    <div class="mt-12 p-5 sm:p-8 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-xl">
                         <div>
                             <span class="text-[11px] font-extrabold text-sky-400 uppercase tracking-widest block mb-1">BANTUAN & INFORMASI PAJAK</span>
                             <h4 class="text-xl font-extrabold text-white">Kontak Resmi BKD Kabupaten Boyolali</h4>

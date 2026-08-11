@@ -29,7 +29,7 @@ export default function Umkm({ umkm }) {
                         <Store class="h-3.5 w-3.5" />
                         Pemberdayaan Ekonomi Lokal
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Direktori UMKM Desa Banyuurip</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Direktori UMKM Desa Banyuurip</h1>
                     <p class="mt-3 text-sky-100/90 max-w-2xl text-base leading-relaxed">
                         Katalog resmi usaha mikro, olahan kuliner, minuman segar, dan kerajinan lokal buatan warga Desa Banyuurip.
                     </p>

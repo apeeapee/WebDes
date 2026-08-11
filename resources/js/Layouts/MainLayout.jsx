@@ -89,34 +89,43 @@ export default function MainLayout({ children }) {
             {/* Sticky Fixed Container for Top Bar & Navbar Header Together */}
             <div class="sticky top-0 z-50 w-full shadow-xs">
                 {/* Top Announcement Ribbon */}
-                <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white text-xs font-medium py-2 px-4 border-b border-sky-900/40">
-                    <div class="mx-auto max-w-[94rem] px-2 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+                <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white text-xs font-medium py-1.5 sm:py-2 px-3 sm:px-4 border-b border-sky-900/40">
+                    <div class="mx-auto max-w-[94rem] px-2 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
                         {/* Far Left Positioned Title */}
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex items-center bg-sky-500/20 text-sky-200 border border-sky-400/30 rounded-full px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <span class="hidden sm:inline-flex items-center bg-sky-500/20 text-sky-200 border border-sky-400/30 rounded-full px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider shrink-0">
                                 Banyuurip Digital Gateway
                             </span>
-                            <span class="hidden md:inline text-sky-100/90 text-[11px] font-medium">
+                            <span class="sm:hidden inline-flex items-center bg-sky-500/20 text-sky-200 border border-sky-400/30 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider shrink-0">
+                                BDG
+                            </span>
+                            <span class="hidden md:inline text-sky-100/90 text-[11px] font-medium truncate">
                                 Portal Digital Resmi Desa Banyuurip, Kecamatan Klego, Kabupaten Boyolali
                             </span>
                         </div>
 
                         {/* Right Side: Jam Pelayanan & Login Perangkat */}
-                        <div class="flex items-center gap-3 sm:gap-4 text-[11px] text-sky-200 shrink-0">
-                            <span class="inline-flex items-center gap-1.5 text-sky-300 font-bold border-r border-sky-800/80 pr-3 sm:pr-4">
+                        <div class="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-sky-200 shrink-0">
+                            <span class="hidden sm:inline-flex items-center gap-1.5 text-sky-300 font-bold border-r border-sky-800/80 pr-3 sm:pr-4">
                                 <Clock class="h-3.5 w-3.5 text-sky-400 shrink-0" />
                                 <span>Jam Pelayanan: 08.00 - 14.00 WIB</span>
+                            </span>
+                            <span class="sm:hidden inline-flex items-center gap-1 text-sky-300 font-bold border-r border-sky-800/80 pr-2">
+                                <Clock class="h-3 w-3 text-sky-400 shrink-0" />
+                                <span>08.00-14.00</span>
                             </span>
 
                             {isAdmin ? (
                                 <Link href="/admin" class="hover:text-white font-bold transition-colors flex items-center gap-1">
                                     <ShieldCheck class="h-3.5 w-3.5 text-sky-300" />
-                                    <span>Panel Admin</span>
+                                    <span class="hidden sm:inline">Panel Admin</span>
+                                    <span class="sm:hidden">Admin</span>
                                 </Link>
                             ) : (
                                 <Link href="/admin/login" class="hover:text-white font-bold transition-colors flex items-center gap-1">
                                     <Globe class="h-3.5 w-3.5 text-sky-300" />
-                                    <span>Login Perangkat</span>
+                                    <span class="hidden sm:inline">Login Perangkat</span>
+                                    <span class="sm:hidden">Login</span>
                                 </Link>
                             )}
                         </div>
@@ -125,20 +134,20 @@ export default function MainLayout({ children }) {
 
                 {/* Header Navigation */}
                 <header class="w-full bg-white border-b border-slate-200">
-                    <div class="mx-auto max-w-[94rem] px-4 sm:px-6 lg:px-8">
-                        <div class="flex h-20 items-center justify-between gap-4">
+                    <div class="mx-auto max-w-[94rem] px-3 sm:px-6 lg:px-8">
+                        <div class="flex h-16 sm:h-20 items-center justify-between gap-2 sm:gap-4">
                             
                             {/* Brand Logo & Title */}
-                            <div class="flex items-center gap-3 shrink-0">
-                                <Link href="/" class="flex items-center gap-3">
-                                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1 border border-slate-200 shadow-xs">
-                                        <img src="/images/logo-boyolali.jpg" alt="Logo Kabupaten Boyolali" class="h-9 w-auto object-contain" />
+                            <div class="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+                                <Link href="/" class="flex items-center gap-2 sm:gap-3 min-w-0">
+                                    <div class="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white p-1 border border-slate-200 shadow-xs shrink-0">
+                                        <img src="/images/logo-boyolali.jpg" alt="Logo Kabupaten Boyolali" class="h-7 sm:h-9 w-auto object-contain" />
                                     </div>
-                                    <div>
-                                        <span class="text-lg font-black tracking-tight text-slate-900 block leading-none hover:text-sky-700 transition-colors uppercase">
+                                    <div class="min-w-0">
+                                        <span class="text-sm sm:text-lg font-black tracking-tight text-slate-900 block leading-none hover:text-sky-700 transition-colors uppercase truncate">
                                             DESA BANYUURIP
                                         </span>
-                                        <span class="block text-[11px] font-semibold text-slate-500 mt-1 leading-none">
+                                        <span class="hidden sm:block text-[11px] font-semibold text-slate-500 mt-1 leading-none">
                                             Digitalisasi Profil, Ekonomi & Kesehatan Satu Pintu
                                         </span>
                                     </div>
@@ -260,10 +269,10 @@ export default function MainLayout({ children }) {
                             </nav>
 
                             {/* Right Action CTA Button (Skrining ISPA) & Mobile Trigger */}
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                                 <Link 
                                     href="/kesehatan" 
-                                    class="inline-flex items-center gap-2 rounded-full bg-sky-600 hover:bg-sky-700 px-5 py-2.5 text-xs font-extrabold text-white shadow-xs"
+                                    class="hidden sm:inline-flex items-center gap-2 rounded-full bg-sky-600 hover:bg-sky-700 px-5 py-2.5 text-xs font-extrabold text-white shadow-xs"
                                 >
                                     <HeartPulse class="h-4 w-4" />
                                     <span>Skrining ISPA</span>
@@ -271,9 +280,9 @@ export default function MainLayout({ children }) {
 
                                 <button 
                                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-                                    class="lg:hidden p-2.5 rounded-2xl text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors border border-slate-200"
+                                    class="lg:hidden p-2 sm:p-2.5 rounded-2xl text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition-colors border border-slate-200"
                                 >
-                                    {mobileMenuOpen ? <X class="h-6 w-6" /> : <Menu class="h-6 w-6" />}
+                                    {mobileMenuOpen ? <X class="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu class="h-5 w-5 sm:h-6 sm:w-6" />}
                                 </button>
                             </div>
                         </div>
@@ -281,7 +290,7 @@ export default function MainLayout({ children }) {
 
                     {/* Mobile Drawer Navigation */}
                     {mobileMenuOpen && (
-                        <div class="lg:hidden bg-white border-b border-slate-200 px-4 pt-4 pb-6 space-y-2 shadow-lg">
+                        <div class="lg:hidden bg-white border-b border-slate-200 px-3 sm:px-4 pt-3 sm:pt-4 pb-4 sm:pb-6 space-y-1.5 sm:space-y-2 shadow-lg max-h-[70vh] overflow-y-auto">
                             <Link
                                 href="/"
                                 onClick={() => setMobileMenuOpen(false)}
@@ -365,11 +374,11 @@ export default function MainLayout({ children }) {
             </main>
 
             {/* Premium Blue Water Footer */}
-            <footer class="bg-gradient-to-br from-slate-950 via-sky-950 to-blue-950 text-slate-300 pt-16 pb-12 border-t border-sky-900/50 relative overflow-hidden">
+            <footer class="bg-gradient-to-br from-slate-950 via-sky-950 to-blue-950 text-slate-300 pt-10 sm:pt-16 pb-8 sm:pb-12 border-t border-sky-900/50 relative overflow-hidden">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.15),transparent_50%)]"></div>
                 
                 <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-sky-900/40">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 pb-10 sm:pb-12 border-b border-sky-900/40">
                         {/* Brand Column */}
                         <div class="space-y-4 md:col-span-1">
                             <div class="flex items-center gap-3">
@@ -406,19 +415,19 @@ export default function MainLayout({ children }) {
                                         href="https://wa.me/6281327349963?text=Halo%20Admin%20Pemerintah%20Desa%20Banyuurip,%20saya%20ingin%20bertanya" 
                                         target="_blank" 
                                         rel="noopener noreferrer" 
-                                        class="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-400/30 text-sky-300 font-bold hover:bg-sky-500/20 hover:text-sky-100 transition-colors"
+                                        class="inline-flex items-center gap-2 sm:gap-2.5 px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-400/30 text-sky-300 font-bold hover:bg-sky-500/20 hover:text-sky-100 transition-colors text-[11px] sm:text-xs"
                                     >
-                                        <MessageSquare class="h-4 w-4 text-sky-400 shrink-0" />
-                                        <span>WhatsApp: 0813-2734-9963</span>
+                                        <MessageSquare class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-sky-400 shrink-0" />
+                                        <span>WA: 0813-2734-9963</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a 
                                         href="mailto:banyuuripboyolali@gmail.com?subject=Pertanyaan%20Layanan%20Desa%20Banyuurip" 
-                                        class="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-400/30 text-sky-300 font-bold hover:bg-sky-500/20 hover:text-sky-100 transition-colors"
+                                        class="inline-flex items-center gap-2 sm:gap-2.5 px-3 py-2 rounded-xl bg-sky-500/10 border border-sky-400/30 text-sky-300 font-bold hover:bg-sky-500/20 hover:text-sky-100 transition-colors text-[11px] sm:text-xs"
                                     >
-                                        <Mail class="h-4 w-4 text-sky-400 shrink-0" />
-                                        <span>banyuuripboyolali@gmail.com</span>
+                                        <Mail class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-sky-400 shrink-0" />
+                                        <span class="truncate">banyuuripboyolali@gmail.com</span>
                                     </a>
                                 </li>
                             </ul>
@@ -436,7 +445,7 @@ export default function MainLayout({ children }) {
                         </div>
                     </div>
 
-                    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-sky-300/60 gap-4">
+                    <div class="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] sm:text-xs text-sky-300/60 gap-3 sm:gap-4 text-center sm:text-left">
                         <p>© 2026 Pemerintah Desa Banyuurip, Kecamatan Klego, Kabupaten Boyolali.</p>
                         <div class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-sky-400"></span>

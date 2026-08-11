@@ -122,7 +122,7 @@ export default function PusatHukum({ regulasi, antikorupsiDocs }) {
                         <Scale class="h-3.5 w-3.5" />
                         Jaringan Dokumentasi & Informasi Hukum (JDIH)
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Pusat Hukum Desa Banyuurip</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Pusat Hukum Desa Banyuurip</h1>
                     <p class="mt-3 text-sky-100/90 max-w-3xl text-base leading-relaxed">
                         Database resmi Peraturan Desa (Perdes), Peraturan Kepala Desa (Perkades), serta Standar Operasional Prosedur (SOP) tata kelola pemerintahan Desa Banyuurip.
                     </p>

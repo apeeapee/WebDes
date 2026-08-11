@@ -61,7 +61,7 @@ export default function Profil({ sejarah, perangkat }) {
                         <Compass class="h-3.5 w-3.5" />
                         Monografi & Historiografi Desa
                     </span>
-                    <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">Profil, Sejarah & Visi Misi Desa</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight lg:text-5xl">Profil, Sejarah & Visi Misi Desa</h1>
                     <p class="mt-3 text-sky-100/90 max-w-3xl text-base leading-relaxed">
                         Dokumentasi historiografi asal-usul nama *Banyuurip*, kisah perjuangan Eyang Sumendhi Amijaya & peristiwa *Mur Genthong*, visi-misi tata kelola desa, serta kajian keilmuan perdesaan.
                     </p>
@@ -86,7 +86,7 @@ export default function Profil({ sejarah, perangkat }) {
                             <span class="block text-xs font-extrabold text-sky-300 uppercase tracking-widest mb-3 flex items-center gap-2">
                                 <Sparkles class="h-4 w-4 text-sky-400" /> VISI DESA BANYUURIP
                             </span>
-                            <p class="text-2xl font-black text-white leading-snug tracking-tight">
+                            <p class="text-lg sm:text-2xl font-black text-white leading-snug tracking-tight">
                                 “MENUJU BANYUURIP YANG TRANSPARAN, AKUNTABEL, DAN SEPENUH HATI DALAM PELAYANAN”
                             </p>
                         </div>
@@ -134,7 +134,7 @@ export default function Profil({ sejarah, perangkat }) {
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3 py-1 rounded-full border border-sky-200">Historiografi Lengkap</span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Sejarah & Asal-Usul Desa Banyuurip</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Sejarah & Asal-Usul Desa Banyuurip</h2>
                         <p class="mt-4 text-slate-600 leading-relaxed text-sm">
                             Dokumentasi tutur sejarah tentang perjuangan Eyang Ijo, peristiwa mata air Mur Genthong oleh Eyang Sumendhi Amijaya, serta silsilah kepemimpinan Desa Banyuurip.
                         </p>
@@ -201,7 +201,7 @@ export default function Profil({ sejarah, perangkat }) {
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3 py-1 rounded-full border border-sky-200">Kajian Ilmu Perdesaan</span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Pengertian, Fungsi & Ciri Masyarakat Desa</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Pengertian, Fungsi & Ciri Masyarakat Desa</h2>
                         <p class="mt-4 text-slate-600 leading-relaxed text-sm">
                             Pemahaman teori keilmuan kependudukan perdesaan berdasarkan regulasi UU No. 6 Tahun 2014 & para ahli kependudukan.
                         </p>
@@ -273,7 +273,7 @@ export default function Profil({ sejarah, perangkat }) {
                 <div class="border-t border-sky-100 pt-20">
                     <div class="text-center max-w-3xl mx-auto mb-16">
                         <span class="text-xs font-extrabold uppercase tracking-widest text-sky-700 bg-sky-100 px-3 py-1 rounded-full border border-sky-200">Struktur Aparatur</span>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl leading-tight">Pemerintah Desa Banyuurip</h2>
+                        <h2 class="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 lg:text-4xl leading-tight">Pemerintah Desa Banyuurip</h2>
                         <p class="mt-4 text-slate-600">
                             Jajaran Perangkat Desa yang siap melayani masyarakat dengan penuh integritas dan sepenuh hati.
                         </p>
