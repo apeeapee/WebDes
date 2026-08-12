@@ -48,7 +48,7 @@ export default function Login({ errors }) {
                     <form class="mt-8 space-y-6" onSubmit={handleSubmit}>
                         <div class="space-y-4">
                             <div>
-                                <label htmlFor="email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Alamat Email Perangkat</label>
+                                <label htmlFor="email" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Alamat Email Perangkat <span class="text-rose-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-sky-600">
                                         <Mail class="h-4 w-4" />
@@ -65,7 +65,7 @@ export default function Login({ errors }) {
                                 </div>
                             </div>
                             <div>
-                                <label htmlFor="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi</label>
+                                <label htmlFor="password" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi <span class="text-rose-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-sky-600">
                                         <KeyRound class="h-4 w-4" />

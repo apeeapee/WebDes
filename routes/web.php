@@ -87,6 +87,12 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/antikorupsi', [AdminController::class, 'antikorupsiStore'])->name('admin.antikorupsi.store');
     Route::put('/admin/antikorupsi/{id}', [AdminController::class, 'antikorupsiUpdate'])->name('admin.antikorupsi.update');
     Route::delete('/admin/antikorupsi/{id}', [AdminController::class, 'antikorupsiDestroy'])->name('admin.antikorupsi.destroy');
+
+    // Manajemen Pengguna (Super Admin Only)
+    Route::get('/admin/pengguna', [AdminController::class, 'penggunaIndex'])->name('admin.pengguna.index');
+    Route::post('/admin/pengguna', [AdminController::class, 'penggunaStore'])->name('admin.pengguna.store');
+    Route::put('/admin/pengguna/{id}', [AdminController::class, 'penggunaUpdate'])->name('admin.pengguna.update');
+    Route::delete('/admin/pengguna/{id}', [AdminController::class, 'penggunaDestroy'])->name('admin.pengguna.destroy');
 });
 
 

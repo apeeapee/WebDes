@@ -18,7 +18,8 @@ import {
     Menu, 
     X, 
     ChevronRight, 
-    Droplets 
+    Droplets,
+    UserCog 
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title, subtitle }) {
@@ -39,6 +40,12 @@ export default function AdminLayout({ children, title, subtitle }) {
         { name: 'Transparansi APBDes', href: '/admin/apbdes', icon: PieChart },
         { name: 'Desa Antikorupsi KPK', href: '/admin/antikorupsi', icon: ShieldCheck },
     ];
+
+    // Menu khusus Super Admin
+    const authUser = props.auth?.user;
+    if (authUser?.role === 'super_admin') {
+        adminNav.push({ name: 'Manajemen Pengguna', href: '/admin/pengguna', icon: UserCog });
+    }
 
     const isActive = (href) => {
         if (href === '/admin' && url === '/admin') return true;
@@ -167,8 +174,13 @@ export default function AdminLayout({ children, title, subtitle }) {
 
                 {/* Flash Messages */}
                 {flash?.success && (
-                    <div class="bg-sky-600 text-white px-6 py-2.5 text-xs font-bold shadow-xs">
+                    <div className="bg-sky-600 text-white px-6 py-2.5 text-xs font-bold shadow-xs">
                         <span>{flash.success}</span>
+                    </div>
+                )}
+                {flash?.error && (
+                    <div className="bg-rose-600 text-white px-6 py-2.5 text-xs font-bold shadow-xs">
+                        <span>{flash.error}</span>
                     </div>
                 )}
 

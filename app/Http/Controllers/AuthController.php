@@ -10,7 +10,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && in_array(Auth::user()->role, ['admin', 'super_admin'])) {
             return redirect()->route('admin');
         }
         return Inertia::render('Admin/Login');
@@ -26,7 +26,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
+            if (in_array(Auth::user()->role, ['admin', 'super_admin'])) {
                 return redirect()->intended(route('admin'));
             }
 

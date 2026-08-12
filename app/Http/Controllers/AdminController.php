@@ -17,6 +17,9 @@ use App\Models\Apbdes;
 use App\Models\AgribisnisStat;
 use App\Models\DesaAntikorupsi;
 use App\Models\VillageSetting;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -660,5 +663,92 @@ class AdminController extends Controller
         $item = DesaAntikorupsi::findOrFail($id);
         $item->delete();
         return redirect()->route('admin.antikorupsi.index')->with('success', 'Dokumen Desa Antikorupsi berhasil dihapus!');
+    }
+
+    // 12. Manajemen Pengguna (Super Admin Only)
+    public function penggunaIndex()
+    {
+        if (Auth::user()->role !== 'super_admin') {
+            return redirect()->route('admin')->with('error', 'Akses ditolak. Hanya Super Admin yang dapat mengelola pengguna.');
+        }
+
+        $items = User::whereIn('role', ['admin', 'super_admin'])->orderBy('id', 'asc')->get()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'created_at' => $user->created_at?->format('d M Y H:i'),
+            ];
+        });
+
+        return Inertia::render('Admin/Pengguna', compact('items'));
+    }
+
+    public function penggunaStore(Request $request)
+    {
+        if (Auth::user()->role !== 'super_admin') {
+            return redirect()->route('admin')->with('error', 'Akses ditolak.');
+        }
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email|max:255',
+            'password' => 'required|string|min:6|max:255',
+            'role' => 'required|string|in:admin,super_admin',
+        ]);
+
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => $data['role'],
+        ]);
+
+        return redirect()->route('admin.pengguna.index')->with('success', 'Akun admin baru berhasil dibuat!');
+    }
+
+    public function penggunaUpdate(Request $request, $id)
+    {
+        if (Auth::user()->role !== 'super_admin') {
+            return redirect()->route('admin')->with('error', 'Akses ditolak.');
+        }
+
+        $user = User::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6|max:255',
+            'role' => 'required|string|in:admin,super_admin',
+        ]);
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->role = $data['role'];
+
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.pengguna.index')->with('success', 'Akun admin berhasil diperbarui!');
+    }
+
+    public function penggunaDestroy($id)
+    {
+        if (Auth::user()->role !== 'super_admin') {
+            return redirect()->route('admin')->with('error', 'Akses ditolak.');
+        }
+
+        if (Auth::id() == $id) {
+            return redirect()->route('admin.pengguna.index')->with('error', 'Anda tidak dapat menghapus akun sendiri.');
+        }
+
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('admin.pengguna.index')->with('success', 'Akun admin berhasil dihapus!');
     }
 }

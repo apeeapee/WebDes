@@ -20,7 +20,7 @@ class AdminMiddleware
             return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu untuk mengakses halaman admin.');
         }
 
-        if (Auth::user()->role !== 'admin') {
+        if (!in_array(Auth::user()->role, ['admin', 'super_admin'])) {
             Auth::logout();
             return redirect()->route('admin.login')->with('error', 'Akses ditolak. Halaman ini hanya untuk Administrator.');
         }
