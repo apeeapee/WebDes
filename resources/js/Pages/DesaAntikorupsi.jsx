@@ -125,11 +125,25 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                             {/* Modal Content / List of Indicators & Drive Links */}
                             <div class="p-4 sm:p-6 md:p-8 space-y-4 overflow-y-auto bg-slate-50/50">
                                 {(selectedPilarModal.pilar.indikator_list || []).map((ind) => {
-                                    // Match db doc if available
-                                    const matchedDoc = selectedPilarModal.docs.find(d => 
-                                        d.judul.toLowerCase().includes(ind.judul.toLowerCase().substring(0, 15)) ||
-                                        (d.nomor && d.nomor.includes(ind.no.toString()))
-                                    ) || selectedPilarModal.docs[ind.no % selectedPilarModal.docs.length] || selectedPilarModal.docs[0];
+                                    // Match db doc accurately by indicator number or exact title
+                                    const matchedDoc = selectedPilarModal.docs.find(d => {
+                                        // 1. Match by extracted number from nomor (e.g. "Indikator 2" or "2" matches ind.no = 2)
+                                        const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
+                                        if (docNo !== null && docNo === ind.no) return true;
+
+                                        // 2. Match by normalized exact title or full title inclusion
+                                        const normDoc = (d.judul || '').trim().toLowerCase();
+                                        const normInd = (ind.judul || '').trim().toLowerCase();
+                                        if (normDoc && normInd && (normDoc === normInd || normDoc.includes(normInd) || normInd.includes(normDoc))) {
+                                            return true;
+                                        }
+
+                                        return false;
+                                    }) || (antikorupsi || []).find(d => {
+                                        // Fallback across all docs by indicator number
+                                        const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
+                                        return docNo !== null && docNo === ind.no;
+                                    });
 
                                     return (
                                         <div key={ind.no} class="rounded-2xl bg-white p-5 border border-sky-100 shadow-xs space-y-3">
