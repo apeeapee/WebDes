@@ -32,37 +32,21 @@ export default function Home({ stats, berita }) {
             type: 'image',
             src: '/images/hero/hero1.jpg',
             alt: 'Panorama Desa Banyuurip',
-            badge: 'Portal Digital Desa Banyuurip',
-            badgeIcon: Droplets,
-            badgeClass: 'text-sky-300 border-sky-400/50 bg-slate-950/70',
-            iconClass: 'text-sky-400'
         },
         {
             type: 'document',
             src: '/images/hero/sket-bebas-pidana.png',
             alt: 'Surat Keterangan Bebas Pidana Polsek Klego',
-            badge: 'Surat Keterangan Bebas Pidana Resmi (Polsek Klego)',
-            badgeIcon: ShieldCheck,
-            badgeClass: 'text-emerald-300 border-emerald-400/60 bg-emerald-950/80',
-            iconClass: 'text-emerald-400'
         },
         {
             type: 'image',
             src: '/images/hero/hero2.jpg',
             alt: 'Aparatur & Balai Desa Banyuurip',
-            badge: 'Pemerintahan Bersih & Transparan',
-            badgeIcon: ShieldCheck,
-            badgeClass: 'text-sky-300 border-sky-400/50 bg-slate-950/70',
-            iconClass: 'text-sky-400'
         },
         {
             type: 'image',
             src: '/images/hero/hero3.jpg',
             alt: 'Pertanian & Agribisnis Desa Banyuurip',
-            badge: 'Ketahanan Pangan & Agribisnis Unggul',
-            badgeIcon: Sprout,
-            badgeClass: 'text-emerald-300 border-emerald-400/50 bg-slate-950/70',
-            iconClass: 'text-emerald-400'
         },
     ];
 
@@ -75,9 +59,6 @@ export default function Home({ stats, berita }) {
         }, 6000);
         return () => clearInterval(interval);
     }, [heroSlides.length]);
-
-    const activeSlide = heroSlides[currentHeroIdx] || heroSlides[0];
-    const ActiveBadgeIcon = activeSlide.badgeIcon || Droplets;
 
     return (
         <MainLayout>
@@ -132,13 +113,6 @@ export default function Home({ stats, berita }) {
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.15),transparent_60%)] z-10"></div>
 
                 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8 flex flex-col items-center text-center z-20">
-                    <div class="animate-float">
-                        <span class={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold border backdrop-blur-md mb-6 shadow-xl shadow-black/50 transition-all duration-700 ${activeSlide.badgeClass}`}>
-                            <ActiveBadgeIcon class={`h-4 w-4 ${activeSlide.iconClass}`} />
-                            <span>{activeSlide.badge}</span>
-                        </span>
-                    </div>
-                    
                     <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight lg:text-6xl max-w-4xl leading-tight text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
                         Banyuurip <span class="text-sky-400 font-extrabold drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">Digital Gateway</span>
                     </h1>
