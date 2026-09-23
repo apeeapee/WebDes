@@ -13,7 +13,9 @@ import {
     ExternalLink, 
     FolderCheck, 
     Sparkles, 
-    ArrowRight 
+    ArrowRight,
+    Link2Off,
+    Inbox 
 } from 'lucide-react';
 
 export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
@@ -78,7 +80,7 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                                             <IconComp class="h-5.5 w-5.5" />
                                         </div>
                                         <span class="text-[10px] font-extrabold text-sky-800 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
-                                            {pilar.indikator_list?.length || 0} Indikator
+                                            {(pilarDocs.length > 0 ? pilarDocs.length : (pilar.indikator_list?.length || 0))} Dokumen & Indikator
                                         </span>
                                     </div>
 
@@ -124,46 +126,76 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
 
                             {/* Modal Content / List of Indicators & Drive Links */}
                             <div class="p-4 sm:p-6 md:p-8 space-y-4 overflow-y-auto bg-slate-50/50">
-                                {(selectedPilarModal.pilar.indikator_list || []).map((ind) => {
-                                    // Match db doc accurately by indicator number or exact title
-                                    const matchedDoc = selectedPilarModal.docs.find(d => {
-                                        // 1. Match by extracted number from nomor (e.g. "Indikator 2" or "2" matches ind.no = 2)
-                                        const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
-                                        if (docNo !== null && docNo === ind.no) return true;
+                                {(() => {
+                                    const docs = selectedPilarModal.docs || [];
+                                    const stdList = selectedPilarModal.pilar.indikator_list || [];
+                                    const usedDocIds = new Set();
 
-                                        // 2. Match by normalized exact title or full title inclusion
-                                        const normDoc = (d.judul || '').trim().toLowerCase();
-                                        const normInd = (ind.judul || '').trim().toLowerCase();
-                                        if (normDoc && normInd && (normDoc === normInd || normDoc.includes(normInd) || normInd.includes(normDoc))) {
-                                            return true;
-                                        }
+                                    // 1. Map standard KPK indicators to their DB documents
+                                    const stdItems = stdList.map((ind) => {
+                                        const matched = docs.find(d => {
+                                            const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
+                                            if (docNo !== null && docNo === ind.no) return true;
+                                            const normDoc = (d.judul || '').trim().toLowerCase();
+                                            const normInd = (ind.judul || '').trim().toLowerCase();
+                                            return normDoc && normInd && (normDoc === normInd || normDoc.includes(normInd) || normInd.includes(normDoc));
+                                        });
 
-                                        return false;
-                                    }) || (antikorupsi || []).find(d => {
-                                        // Fallback across all docs by indicator number
-                                        const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
-                                        return docNo !== null && docNo === ind.no;
+                                        if (matched) usedDocIds.add(matched.id);
+
+                                        return {
+                                            id: matched?.id ? `doc-${matched.id}` : `std-${ind.no}`,
+                                            badgeNo: `#${ind.no}`,
+                                            judul: matched?.judul || ind.judul,
+                                            deskripsi: matched?.deskripsi || 'Dokumen terverifikasi pemenuhan indikator resmi KPK RI.',
+                                            link_drive: matched?.link_drive || null,
+                                            status: matched?.status || (matched?.link_drive ? 'Terverifikasi' : 'Dalam Proses')
+                                        };
                                     });
 
-                                    return (
-                                        <div key={ind.no} class="rounded-2xl bg-white p-5 border border-sky-100 shadow-xs space-y-3">
+                                    // 2. Extra / custom documents added through Admin CRUD that aren't part of standard 1-18
+                                    const extraItems = docs
+                                        .filter(d => !usedDocIds.has(d.id))
+                                        .map((d, idx) => ({
+                                            id: `extra-${d.id}`,
+                                            badgeNo: d.nomor ? (d.nomor.length <= 16 ? d.nomor : `#${idx + 1}`) : `+${idx + 1}`,
+                                            judul: d.judul,
+                                            deskripsi: d.deskripsi || 'Dokumen pendukung tata kelola dan integritas Desa Antikorupsi.',
+                                            link_drive: d.link_drive || null,
+                                            status: d.status || 'Terverifikasi'
+                                        }));
+
+                                    const displayItems = [...stdItems, ...extraItems];
+
+                                    if (displayItems.length === 0) {
+                                        return (
+                                            <div class="p-8 text-center text-slate-400">
+                                                <Inbox class="h-10 w-10 mx-auto mb-2 opacity-40 text-sky-400" />
+                                                <p class="text-sm font-bold text-slate-600">Belum ada dokumen indikator terdaftar di pilar ini.</p>
+                                                <p class="text-xs text-slate-400 mt-1">Dokumen dapat ditambahkan melalui panel Admin.</p>
+                                            </div>
+                                        );
+                                    }
+
+                                    return displayItems.map((item) => (
+                                        <div key={item.id} class="rounded-2xl bg-white p-5 border border-sky-100 shadow-xs space-y-3">
                                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                 <div class="flex items-start gap-3">
-                                                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white font-extrabold text-xs shadow-xs">
-                                                        #{ind.no}
+                                                    <span class="flex h-7 px-2.5 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white font-extrabold text-xs shadow-xs">
+                                                        {item.badgeNo}
                                                     </span>
                                                     <div>
-                                                        <h4 class="text-sm font-extrabold text-slate-900 leading-snug">{ind.judul}</h4>
+                                                        <h4 class="text-sm font-extrabold text-slate-900 leading-snug">{item.judul}</h4>
                                                         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                                                            {matchedDoc?.deskripsi || 'Dokumen terverifikasi pemenuhan indikator resmi KPK RI.'}
+                                                            {item.deskripsi}
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 {/* Drive Button */}
-                                                {matchedDoc?.link_drive ? (
+                                                {item.link_drive ? (
                                                     <a 
-                                                        href={matchedDoc.link_drive} 
+                                                        href={item.link_drive} 
                                                         target="_blank" 
                                                         rel="noopener noreferrer"
                                                         class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors shrink-0 shadow-xs"
@@ -172,14 +204,14 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                                                         <ExternalLink class="h-3.5 w-3.5" />
                                                     </a>
                                                 ) : (
-                                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 shrink-0">
-                                                        <CheckCircle2 class="h-3.5 w-3.5" /> Terverifikasi
+                                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 shrink-0">
+                                                        <Link2Off class="h-3.5 w-3.5" /> Belum ada link
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                    );
-                                })}
+                                    ));
+                                })()}
                             </div>
 
                             {/* Modal Footer */}
