@@ -75,12 +75,12 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                                 class="rounded-3xl p-6 border border-sky-100 bg-white hover:border-sky-400 shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
                             >
                                 <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div class="h-11 w-11 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="h-11 w-11 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold group-hover:scale-105 transition-transform shrink-0">
                                             <IconComp class="h-5.5 w-5.5" />
                                         </div>
-                                        <span class="text-[10px] font-extrabold text-sky-800 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
-                                            {(pilarDocs.length > 0 ? pilarDocs.length : (pilar.indikator_list?.length || 0))} Dokumen & Indikator
+                                        <span class="text-[11px] font-extrabold text-sky-800 bg-sky-50 px-3 py-1 rounded-full border border-sky-200 whitespace-nowrap shrink-0">
+                                            {(pilarDocs.length > 0 ? pilarDocs.length : (pilar.indikator_list?.length || 0))} Indikator
                                         </span>
                                     </div>
 
