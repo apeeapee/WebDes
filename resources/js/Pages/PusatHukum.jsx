@@ -13,101 +13,35 @@ import {
     Building2, 
     Calendar, 
     Folder, 
-    Lock 
+    Lock,
+    Inbox 
 } from 'lucide-react';
 
 export default function PusatHukum({ regulasi, antikorupsiDocs }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Semua');
 
-    const categories = [
+    const defaultCategories = [
         'Semua', 
-        'Peraturan Desa (Perdes)', 
-        'Peraturan Kepala Desa (Perkades)', 
-        'SOP & Maklumat Pelayanan'
+        'Peraturan Desa', 
+        'Peraturan Kepala Desa', 
+        'Surat Keputusan Desa',
+        'Dokumen Rencana Pembangunan'
     ];
+    // Gather all unique categories present in actual regulasi data
+    const dynamicCategories = Array.from(new Set((regulasi || []).map(r => r.kategori).filter(Boolean)));
+    const categories = ['Semua', ...Array.from(new Set([...defaultCategories.slice(1), ...dynamicCategories]))];
 
-    // Combine regulations and antikorupsi documents into legal catalog
-    const allLegalDocs = [
-        {
-            id: 1,
-            nomor: 'Perdes No. 01 Tahun 2026',
-            judul: 'Peraturan Desa Banyuurip tentang Anggaran Pendapatan dan Belanja Desa (APBDes) T.A. 2026',
-            kategori: 'Peraturan Desa (Perdes)',
-            tanggal: '02 Januari 2026',
-            deskripsi: 'Landasan hukum penetapan struktur pendapatan, belanja, dan pembiayaan Desa Banyuurip Tahun Anggaran 2026.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_partisipasi_publik_banyuurip'
-        },
-        {
-            id: 2,
-            nomor: 'Perdes No. 03 Tahun 2025',
-            judul: 'Peraturan Desa tentang Pengelolaan Sampah dan Kebersihan Lingkungan Desa Banyuurip',
-            kategori: 'Peraturan Desa (Perdes)',
-            tanggal: '12 April 2025',
-            deskripsi: 'Regulasi pedoman kebersihan lingkungan, pemilahan sampah organik & anorganik, serta larangan pembuangan limbah di sungai.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_tata_laksana_banyuurip'
-        },
-        {
-            id: 3,
-            nomor: 'Perdes No. 05 Tahun 2025',
-            judul: 'Peraturan Desa tentang Rencana Kerja Pemerintah Desa (RKPDes) Tahun Anggaran 2026',
-            kategori: 'Peraturan Desa (Perdes)',
-            tanggal: '20 September 2025',
-            deskripsi: 'Dokumen perencanaan pembangunan desa tahunan yang disepakati melalui Musyawarah Desa (Musdes).',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_partisipasi_publik_banyuurip'
-        },
-        {
-            id: 4,
-            nomor: 'Perkades No. 01 Tahun 2026',
-            judul: 'Peraturan Kepala Desa tentang Maklumat Standar Pelayanan Publik Bebas Pungli (Rp 0)',
-            kategori: 'Peraturan Kepala Desa (Perkades)',
-            tanggal: '01 Maret 2026',
-            deskripsi: 'Maklumat resmi Kepala Desa mengenai standar pelayanan administrasi kependudukan tanpa biaya tambahan.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_pelayanan_publik_banyuurip'
-        },
-        {
-            id: 5,
-            nomor: 'Perkades No. 02 Tahun 2026',
-            judul: 'Peraturan Kepala Desa tentang Tata Cara Pemberian Insentif Kader Kesehatan Posyandu',
-            kategori: 'Peraturan Kepala Desa (Perkades)',
-            tanggal: '05 Februari 2026',
-            deskripsi: 'Ketentuan dan besaran alokasi dana insentif bagi kader kesehatan aktif Posyandu Desa Banyuurip.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_pelayanan_publik_banyuurip'
-        },
-        {
-            id: 6,
-            nomor: 'SOP-PBJ-01/2026',
-            judul: 'Standar Operasional Prosedur (SOP) Pengadaan Barang dan Jasa Desa Transparan',
-            kategori: 'SOP & Maklumat Pelayanan',
-            tanggal: '10 Januari 2026',
-            deskripsi: 'SOP pelaksanaan pengadaan barang/jasa desa yang akuntabel guna mencegah konflik kepentingan & gratifikasi.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_tata_laksana_banyuurip'
-        },
-        {
-            id: 7,
-            nomor: 'SOP-WAS-02/2026',
-            judul: 'SOP Sistem Pengaduan Masyarakat (Whistleblowing) & Laporan BPD',
-            kategori: 'SOP & Maklumat Pelayanan',
-            tanggal: '15 Februari 2026',
-            deskripsi: 'Tata cara penyampaian laporan pengaduan pelanggaran administrasi atau indikasi pungli warga desa.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_pengawasan_banyuurip'
-        },
-        {
-            id: 8,
-            nomor: 'PAK-BUD-05/2026',
-            judul: 'Pakta Integritas Perangkat Desa & Pernyataan Penolakan Gratifikasi',
-            kategori: 'SOP & Maklumat Pelayanan',
-            tanggal: '05 Mei 2026',
-            deskripsi: 'Komitmen bersama seluruh Perangkat Desa Banyuurip dalam menjaga kejujuran dan budaya antikorupsi.',
-            link: 'https://drive.google.com/drive/u/0/folders/1b3Y_sample_budaya_antikorupsi_banyuurip'
-        }
-    ];
+    const allLegalDocs = regulasi || [];
 
     const filteredDocs = allLegalDocs.filter(doc => {
-        const matchesCategory = selectedCategory === 'Semua' || doc.kategori === selectedCategory;
-        const matchesSearch = doc.judul.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              doc.nomor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              doc.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'Semua' || 
+            doc.kategori === selectedCategory || 
+            (selectedCategory.includes(doc.kategori) || doc.kategori?.includes(selectedCategory));
+        const matchesSearch = !searchTerm || 
+            (doc.judul && doc.judul.toLowerCase().includes(searchTerm.toLowerCase())) || 
+            (doc.nomor && doc.nomor.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (doc.deskripsi && doc.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()));
         return matchesCategory && matchesSearch;
     });
 
@@ -176,40 +110,60 @@ export default function PusatHukum({ regulasi, antikorupsiDocs }) {
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {filteredDocs.map((doc) => (
-                            <div key={doc.id} class="rounded-3xl bg-white p-7 border border-sky-100 shadow-xs flex flex-col justify-between space-y-4">
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
-                                            {doc.kategori}
-                                        </span>
-                                        <span class="text-[11px] text-slate-400 flex items-center gap-1">
-                                            <Calendar class="h-3.5 w-3.5" /> {doc.tanggal}
-                                        </span>
+                        {filteredDocs.length > 0 ? (
+                            filteredDocs.map((doc) => (
+                                <div key={doc.id} class="rounded-3xl bg-white p-7 border border-sky-100 shadow-xs flex flex-col justify-between space-y-4">
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-800 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+                                                {doc.kategori}
+                                            </span>
+                                            <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                                                <Calendar class="h-3.5 w-3.5" /> {doc.tanggal || '-'}
+                                            </span>
+                                        </div>
+
+                                        <span class="text-xs font-black text-slate-400 block">{doc.nomor}</span>
+                                        <h3 class="text-base font-extrabold text-slate-900 leading-snug">{doc.judul}</h3>
+                                        {doc.deskripsi && (
+                                            <p class="text-xs text-slate-600 leading-relaxed">{doc.deskripsi}</p>
+                                        )}
                                     </div>
 
-                                    <span class="text-xs font-black text-slate-400 block">{doc.nomor}</span>
-                                    <h3 class="text-base font-extrabold text-slate-900 leading-snug">{doc.judul}</h3>
-                                    <p class="text-xs text-slate-600 leading-relaxed">{doc.deskripsi}</p>
-                                </div>
+                                    <div class="pt-4 border-t border-sky-50 flex items-center justify-between">
+                                        <span class="text-[11px] text-emerald-700 font-extrabold flex items-center gap-1">
+                                            <ShieldCheck class="h-4 w-4" /> Dokumen Sah & Diterbitkan
+                                        </span>
 
-                                <div class="pt-4 border-t border-sky-50 flex items-center justify-between">
-                                    <span class="text-[11px] text-emerald-700 font-extrabold flex items-center gap-1">
-                                        <ShieldCheck class="h-4 w-4" /> Dokumen Sah & Diterbitkan
-                                    </span>
-
-                                    <a
-                                        href={doc.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
-                                    >
-                                        <span>Unduh / Lihat PDF</span>
-                                        <ExternalLink class="h-3.5 w-3.5" />
-                                    </a>
+                                        {doc.link_url || doc.link ? (
+                                            <a
+                                                href={doc.link_url || doc.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors shrink-0 shadow-xs"
+                                            >
+                                                <span>Unduh / Lihat PDF</span>
+                                                <ExternalLink class="h-3.5 w-3.5" />
+                                            </a>
+                                        ) : (
+                                            <span class="text-[11px] text-slate-400 font-bold">Salinan Fisik di Balai Desa</span>
+                                        )}
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div class="rounded-3xl bg-white p-12 text-center border border-sky-100 shadow-xs space-y-3 col-span-full">
+                                <Inbox class="h-12 w-12 text-sky-400 mx-auto opacity-50" />
+                                <h3 class="text-base font-extrabold text-slate-800">
+                                    {searchTerm || selectedCategory !== 'Semua' ? 'Dokumen Tidak Ditemukan' : 'Belum Ada Produk Hukum Terdaftar'}
+                                </h3>
+                                <p class="text-xs text-slate-500 max-w-md mx-auto">
+                                    {searchTerm || selectedCategory !== 'Semua' 
+                                        ? 'Tidak ada produk hukum yang cocok dengan kata kunci atau kategori yang Anda pilih.'
+                                        : 'Saat ini belum ada produk hukum resmi yang dipublikasikan. Dokumen yang diunggah melalui panel Admin akan otomatis muncul di sini.'}
+                                </p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
