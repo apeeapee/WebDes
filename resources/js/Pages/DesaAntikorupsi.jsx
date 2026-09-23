@@ -18,6 +18,141 @@ import {
     Inbox 
 } from 'lucide-react';
 
+const romanToNum = {
+    xviii: 18, xvii: 17, xvi: 16, xv: 15, xiv: 14, xiii: 13, xii: 12, xi: 11,
+    x: 10, ix: 9, viii: 8, vii: 7, vi: 6, v: 5, iv: 4, iii: 3, ii: 2, i: 1
+};
+
+function extractIndicatorNo(str) {
+    if (!str) return null;
+    const s = String(str).trim().toLowerCase();
+    
+    // Pattern 1: explicit indicator number e.g. "indikator 11", "ind 12", "indikator #15"
+    const indMatch = s.match(/(?:indikator|ind|indicator)\s*#?\s*(\d+)/i);
+    if (indMatch) return parseInt(indMatch[1], 10);
+    
+    // Pattern 2: "#11", "# 12"
+    const hashMatch = s.match(/#\s*(\d+)/);
+    if (hashMatch) return parseInt(hashMatch[1], 10);
+    
+    // Pattern 3: Roman numerals e.g. "indikator xi", "xi", "indikator xv"
+    const romanMatch = s.match(/\b(xviii|xvii|xvi|xv|xiv|xiii|xii|xi|x|ix|viii|vii|vi|v|iv|iii|ii|i)\b/i);
+    if (romanMatch && romanToNum[romanMatch[1].toLowerCase()]) {
+        return romanToNum[romanMatch[1].toLowerCase()];
+    }
+    
+    // Pattern 4: Pure number e.g. "11"
+    if (/^\d+$/.test(s)) return parseInt(s, 10);
+    
+    // Pattern 5: Look for numbers 1..18 in the string
+    const numbers = s.match(/\b\d+\b/g);
+    if (numbers) {
+        for (const numStr of numbers) {
+            const n = parseInt(numStr, 10);
+            if (n >= 1 && n <= 18) return n;
+        }
+    }
+    
+    return null;
+}
+
+const indicatorKeywords = {
+    1: ['perencanaan', 'penatausahaan', 'apbdes', 'pertanggungjawaban'],
+    2: ['mekanisme pengawasan', 'evaluasi kinerja', 'kinerja perangkat'],
+    3: ['pengendalian gratifikasi', 'konflik kepentingan', 'pungli'],
+    4: ['pbj', 'pengadaan barang', 'perjanjian kerjasama'],
+    5: ['pakta integritas', 'integritas'],
+    6: ['kegiatan pengawasan', 'bpd'],
+    7: ['tindak lanjut', 'hasil pembinaan', 'pemeriksaan'],
+    8: ['bebas tindak pidana', 'bebas pidana', 'pidana korupsi', 'skck', 'polsek'],
+    9: ['layanan pengaduan', 'pengaduan masyarakat', 'posko pengaduan'],
+    10: ['survei kepuasan', 'kepuasan masyarakat', 'skm'],
+    11: ['spm', 'standar pelayanan minimal', 'pelayanan minimal', 'akses masyarakat'],
+    12: ['media informasi', 'baliho', 'papan informasi', 'infografis apbdes', 'tempat umum'],
+    13: ['maklumat pelayanan', 'maklumat'],
+    14: ['rkp', 'rkpdes', 'musdes', 'musyawarah desa', 'penyusunan rkp'],
+    15: ['kesadaran masyarakat', 'pencegahan gratifikasi', 'suap', 'praktik gratifikasi'],
+    16: ['lkd', 'karang taruna', 'swakelola', 'lembaga kemasyarakatan'],
+    17: ['budaya lokal', 'kearifan lokal', 'hukum adat', 'rembug'],
+    18: ['tokoh masyarakat', 'tokoh agama', 'pemuda', 'perempuan', 'tokoh adat']
+};
+
+const pilarIndicatorsMap = {
+    1: [1, 2, 3, 4, 5],
+    2: [6, 7, 8],
+    3: [9, 10, 13],
+    4: [11, 12, 14, 16],
+    5: [15, 17, 18]
+};
+
+function getPilarIndexFromDoc(doc) {
+    if (!doc) return 0;
+    const no = extractIndicatorNo(doc.nomor) || extractIndicatorNo(doc.judul);
+    if (no !== null) {
+        for (const [pilarIdx, list] of Object.entries(pilarIndicatorsMap)) {
+            if (list.includes(no)) return parseInt(pilarIdx, 10);
+        }
+    }
+    const kat = (doc.kategori || '').toLowerCase();
+    if (kat.includes('tata laksana') || kat.includes('pilar 1') || kat.includes('pilar i')) return 1;
+    if (kat.includes('pengawasan') || kat.includes('pilar 2') || kat.includes('pilar ii')) return 2;
+    if (kat.includes('pelayanan') || kat.includes('pilar 3') || kat.includes('pilar iii')) return 3;
+    if (kat.includes('partisipasi') || kat.includes('pilar 4') || kat.includes('pilar iv')) return 4;
+    if (kat.includes('budaya') || kat.includes('kearifan') || kat.includes('pilar 5') || kat.includes('pilar v')) return 5;
+    return 0;
+}
+
+function isDocInPilar(doc, pilar, pilarIndex) {
+    if (!doc) return false;
+    const docPilarIdx = getPilarIndexFromDoc(doc);
+    if (docPilarIdx !== 0 && docPilarIdx === pilarIndex) return true;
+    const kat = (doc.kategori || '').trim().toLowerCase();
+    const kunci = (pilar.kunci || '').trim().toLowerCase();
+    const pilarName = (pilar.pilar || '').trim().toLowerCase();
+    if (kat && (kat === kunci || kat.includes(kunci) || kunci.includes(kat) || kat.includes(pilarName))) return true;
+    return false;
+}
+
+function scoreDocMatch(d, ind, pilar) {
+    let score = 0;
+    const docNo = extractIndicatorNo(d.nomor);
+    if (docNo !== null) {
+        if (docNo === ind.no) score += 120;
+        else score -= 150;
+    }
+    const titleDocNo = extractIndicatorNo(d.judul);
+    if (titleDocNo !== null) {
+        if (titleDocNo === ind.no) score += 90;
+        else score -= 80;
+    }
+    const normDoc = (d.judul || '').trim().toLowerCase();
+    const normInd = (ind.judul || '').trim().toLowerCase();
+    if (normDoc && normInd) {
+        if (normDoc === normInd) score += 100;
+        else if (normDoc.includes(normInd) || normInd.includes(normDoc)) score += 60;
+    }
+    const kw = indicatorKeywords[ind.no] || [];
+    if (kw.some(k => normDoc.includes(k))) score += 40;
+    const normKat = (d.kategori || '').trim().toLowerCase();
+    const normKunci = (pilar.kunci || '').trim().toLowerCase();
+    if (normKat && normKunci && (normKat.includes(normKunci) || normKunci.includes(normKat))) {
+        score += 20;
+    }
+    const hasLink = Boolean(d.link_drive && d.link_drive.trim().length > 3);
+    if (hasLink) score += 30;
+    return score;
+}
+
+function sanitizeDriveUrl(url) {
+    if (!url) return null;
+    let trimmed = String(url).trim();
+    if (!trimmed) return null;
+    if (!/^https?:\/\//i.test(trimmed)) {
+        trimmed = 'https://' + trimmed;
+    }
+    return trimmed;
+}
+
 export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
     const [selectedPilarModal, setSelectedPilarModal] = useState(null);
 
@@ -66,12 +201,14 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     {(pilarKpk || []).map((pilar, idx) => {
                         const IconComp = iconMap[pilar.icon] || FileText;
-                        const pilarDocs = (antikorupsi || []).filter(doc => doc.kategori === pilar.kunci);
+                        const pilarIndex = idx + 1;
+                        const pilarDocs = (antikorupsi || []).filter(doc => isDocInPilar(doc, pilar, pilarIndex));
+                        const totalCount = Math.max(pilarDocs.length, pilar.indikator_list?.length || 0);
 
                         return (
                             <div 
                                 key={idx}
-                                onClick={() => setSelectedPilarModal({ pilar, docs: pilarDocs })}
+                                onClick={() => setSelectedPilarModal({ pilar, pilarIndex })}
                                 class="rounded-3xl p-6 border border-sky-100 bg-white hover:border-sky-400 shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
                             >
                                 <div class="space-y-4">
@@ -80,7 +217,7 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                                             <IconComp class="h-5.5 w-5.5" />
                                         </div>
                                         <span class="text-[11px] font-extrabold text-sky-800 bg-sky-50 px-3 py-1 rounded-full border border-sky-200 whitespace-nowrap shrink-0">
-                                            {(pilarDocs.length > 0 ? pilarDocs.length : (pilar.indikator_list?.length || 0))} Indikator
+                                            {totalCount} Indikator
                                         </span>
                                     </div>
 
@@ -127,41 +264,48 @@ export default function DesaAntikorupsi({ antikorupsi, pilarKpk }) {
                             {/* Modal Content / List of Indicators & Drive Links */}
                             <div class="p-4 sm:p-6 md:p-8 space-y-4 overflow-y-auto bg-slate-50/50">
                                 {(() => {
-                                    const docs = selectedPilarModal.docs || [];
-                                    const stdList = selectedPilarModal.pilar.indikator_list || [];
+                                    const { pilar, pilarIndex } = selectedPilarModal;
+                                    const stdList = pilar.indikator_list || [];
+                                    const allDocs = antikorupsi || [];
                                     const usedDocIds = new Set();
 
-                                    // 1. Map standard KPK indicators to their DB documents
+                                    // 1. Map each standard KPK indicator to best matching document
                                     const stdItems = stdList.map((ind) => {
-                                        const matched = docs.find(d => {
-                                            const docNo = d.nomor ? parseInt(d.nomor.match(/\d+/)?.[0], 10) : null;
-                                            if (docNo !== null && docNo === ind.no) return true;
-                                            const normDoc = (d.judul || '').trim().toLowerCase();
-                                            const normInd = (ind.judul || '').trim().toLowerCase();
-                                            return normDoc && normInd && (normDoc === normInd || normDoc.includes(normInd) || normInd.includes(normDoc));
-                                        });
+                                        let bestDoc = null;
+                                        let highestScore = 30;
 
-                                        if (matched) usedDocIds.add(matched.id);
+                                        for (const d of allDocs) {
+                                            if (usedDocIds.has(d.id)) continue;
+                                            const score = scoreDocMatch(d, ind, pilar);
+                                            if (score > highestScore) {
+                                                highestScore = score;
+                                                bestDoc = d;
+                                            }
+                                        }
+
+                                        if (bestDoc) {
+                                            usedDocIds.add(bestDoc.id);
+                                        }
 
                                         return {
-                                            id: matched?.id ? `doc-${matched.id}` : `std-${ind.no}`,
+                                            id: bestDoc?.id ? `doc-${bestDoc.id}` : `std-${ind.no}`,
                                             badgeNo: `#${ind.no}`,
-                                            judul: matched?.judul || ind.judul,
-                                            deskripsi: matched?.deskripsi || 'Dokumen terverifikasi pemenuhan indikator resmi KPK RI.',
-                                            link_drive: matched?.link_drive || null,
-                                            status: matched?.status || (matched?.link_drive ? 'Terverifikasi' : 'Dalam Proses')
+                                            judul: bestDoc?.judul || ind.judul,
+                                            deskripsi: bestDoc?.deskripsi || 'Dokumen terverifikasi pemenuhan indikator resmi KPK RI.',
+                                            link_drive: sanitizeDriveUrl(bestDoc?.link_drive),
+                                            status: bestDoc?.status || (bestDoc?.link_drive ? 'Terverifikasi' : 'Dalam Proses')
                                         };
                                     });
 
-                                    // 2. Extra / custom documents added through Admin CRUD that aren't part of standard 1-18
-                                    const extraItems = docs
-                                        .filter(d => !usedDocIds.has(d.id))
+                                    // 2. Extra / custom documents added through Admin CRUD for this pilar
+                                    const extraItems = allDocs
+                                        .filter(d => !usedDocIds.has(d.id) && isDocInPilar(d, pilar, pilarIndex))
                                         .map((d, idx) => ({
                                             id: `extra-${d.id}`,
                                             badgeNo: d.nomor ? (d.nomor.length <= 16 ? d.nomor : `#${idx + 1}`) : `+${idx + 1}`,
                                             judul: d.judul,
                                             deskripsi: d.deskripsi || 'Dokumen pendukung tata kelola dan integritas Desa Antikorupsi.',
-                                            link_drive: d.link_drive || null,
+                                            link_drive: sanitizeDriveUrl(d.link_drive),
                                             status: d.status || 'Terverifikasi'
                                         }));
 

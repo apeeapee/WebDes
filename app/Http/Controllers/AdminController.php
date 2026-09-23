@@ -627,6 +627,14 @@ class AdminController extends Controller
 
     public function antikorupsiStore(Request $request)
     {
+        if ($request->filled('link_drive')) {
+            $link = trim($request->link_drive);
+            if (!preg_match('~^(?:f|ht)tps?://~i', $link)) {
+                $link = 'https://' . $link;
+            }
+            $request->merge(['link_drive' => $link]);
+        }
+
         $data = $request->validate([
             'nomor' => 'required|string|max:255',
             'judul' => 'required|string|max:255',
@@ -644,6 +652,14 @@ class AdminController extends Controller
 
     public function antikorupsiUpdate(Request $request, $id)
     {
+        if ($request->filled('link_drive')) {
+            $link = trim($request->link_drive);
+            if (!preg_match('~^(?:f|ht)tps?://~i', $link)) {
+                $link = 'https://' . $link;
+            }
+            $request->merge(['link_drive' => $link]);
+        }
+
         $data = $request->validate([
             'nomor' => 'required|string|max:255',
             'judul' => 'required|string|max:255',
