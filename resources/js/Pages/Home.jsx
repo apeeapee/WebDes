@@ -21,63 +21,121 @@ import {
     MapPin, 
     ExternalLink, 
     Droplets, 
-    Compass 
+    Compass,
+    ShieldCheck,
+    X 
 } from 'lucide-react';
 
 export default function Home({ stats, berita }) {
-    const heroImages = [
-        '/images/hero/hero1.jpg',
-        '/images/hero/hero2.jpg',
-        '/images/hero/hero3.jpg',
+    const heroSlides = [
+        {
+            type: 'image',
+            src: '/images/hero/hero1.jpg',
+            alt: 'Panorama Desa Banyuurip',
+            badge: 'Portal Digital Desa Banyuurip',
+            badgeIcon: Droplets,
+            badgeClass: 'text-sky-300 border-sky-400/50 bg-slate-950/70',
+            iconClass: 'text-sky-400'
+        },
+        {
+            type: 'document',
+            src: '/images/hero/sket-bebas-pidana.png',
+            alt: 'Surat Keterangan Bebas Pidana Polsek Klego',
+            badge: 'Surat Keterangan Bebas Pidana Resmi (Polsek Klego)',
+            badgeIcon: ShieldCheck,
+            badgeClass: 'text-emerald-300 border-emerald-400/60 bg-emerald-950/80',
+            iconClass: 'text-emerald-400'
+        },
+        {
+            type: 'image',
+            src: '/images/hero/hero2.jpg',
+            alt: 'Aparatur & Balai Desa Banyuurip',
+            badge: 'Pemerintahan Bersih & Transparan',
+            badgeIcon: ShieldCheck,
+            badgeClass: 'text-sky-300 border-sky-400/50 bg-slate-950/70',
+            iconClass: 'text-sky-400'
+        },
+        {
+            type: 'image',
+            src: '/images/hero/hero3.jpg',
+            alt: 'Pertanian & Agribisnis Desa Banyuurip',
+            badge: 'Ketahanan Pangan & Agribisnis Unggul',
+            badgeIcon: Sprout,
+            badgeClass: 'text-emerald-300 border-emerald-400/50 bg-slate-950/70',
+            iconClass: 'text-emerald-400'
+        },
     ];
 
     const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
+    const [showDocModal, setShowDocModal] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentHeroIdx((prev) => (prev + 1) % heroImages.length);
+            setCurrentHeroIdx((prev) => (prev + 1) % heroSlides.length);
         }, 6000);
         return () => clearInterval(interval);
-    }, []);
+    }, [heroSlides.length]);
+
+    const activeSlide = heroSlides[currentHeroIdx] || heroSlides[0];
+    const ActiveBadgeIcon = activeSlide.badgeIcon || Droplets;
 
     return (
         <MainLayout>
             <Head title="Beranda Utama - Desa Banyuurip" />
 
             {/* Dynamic Hero Section with Ultra-Smooth Background Carousel */}
-            <div class="relative overflow-hidden bg-slate-950 text-white min-h-[380px] sm:min-h-[540px] flex flex-col justify-center">
+            <div class="relative overflow-hidden bg-slate-950 text-white min-h-[420px] sm:min-h-[560px] flex flex-col justify-center">
                 
                 {/* Background Carousel Images with Ultra-Smooth Crossfade & Ken Burns Slow Zoom */}
-                {heroImages.map((img, idx) => {
+                {heroSlides.map((slide, idx) => {
                     const isActive = idx === currentHeroIdx;
                     return (
                         <div
-                            key={img}
+                            key={slide.src}
                             class={`absolute inset-0 transform-gpu transition-all duration-[2200ms] ease-in-out ${
                                 isActive ? 'opacity-100 z-1 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
                             }`}
                         >
-                            <img 
-                                src={img} 
-                                alt={`Desa Banyuurip ${idx + 1}`} 
-                                class={`h-full w-full object-cover object-center transform-gpu transition-transform duration-[7000ms] ease-out ${
-                                    isActive ? 'scale-100' : 'scale-110'
-                                }`} 
-                            />
+                            {slide.type === 'document' ? (
+                                <div class="relative h-full w-full flex items-center justify-center overflow-hidden bg-slate-950">
+                                    {/* Ambient Blurred Document Backdrop */}
+                                    <img 
+                                        src={slide.src} 
+                                        alt="Ambient Dokumen Polri" 
+                                        class="absolute inset-0 h-full w-full object-cover object-center filter blur-3xl opacity-20 scale-125" 
+                                    />
+                                    {/* Centered Floating Certificate Document Sheet */}
+                                    <div class="relative z-2 max-h-[88%] max-w-[92%] sm:max-w-[480px] flex items-center justify-center p-2 rounded-2xl bg-white/10 backdrop-blur-xs shadow-2xl border border-white/20 transform-gpu transition-transform duration-[7000ms] ease-out">
+                                        <img 
+                                            src={slide.src} 
+                                            alt={slide.alt} 
+                                            class="max-h-[300px] sm:max-h-[440px] w-auto object-contain rounded-xl shadow-2xl" 
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <img 
+                                    src={slide.src} 
+                                    alt={slide.alt} 
+                                    class={`h-full w-full object-cover object-center transform-gpu transition-transform duration-[7000ms] ease-out ${
+                                        isActive ? 'scale-100' : 'scale-110'
+                                    }`} 
+                                />
+                            )}
                         </div>
                     );
                 })}
 
                 {/* Balanced Tint & Gradient Overlay for optimal photo brightness + text contrast */}
-                <div class="absolute inset-0 bg-slate-950/35 z-10"></div>
-                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/20 to-slate-950/70 z-10"></div>
+                <div class="absolute inset-0 bg-slate-950/40 z-10"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/25 to-slate-950/80 z-10"></div>
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.15),transparent_60%)] z-10"></div>
 
                 <div class="relative mx-auto max-w-7xl px-4 py-16 sm:py-24 sm:px-6 lg:px-8 flex flex-col items-center text-center z-20">
                     <div class="animate-float">
-                        <span class="inline-flex items-center gap-2 rounded-full bg-slate-950/70 px-4 py-1.5 text-xs font-bold text-sky-300 border border-sky-400/50 backdrop-blur-md mb-6 shadow-xl shadow-black/50">
-                            <Droplets class="h-4 w-4 text-sky-400" />
-                            <span>Portal Digital Desa Banyuurip</span>
+                        <span class={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold border backdrop-blur-md mb-6 shadow-xl shadow-black/50 transition-all duration-700 ${activeSlide.badgeClass}`}>
+                            <ActiveBadgeIcon class={`h-4 w-4 ${activeSlide.iconClass}`} />
+                            <span>{activeSlide.badge}</span>
                         </span>
                     </div>
                     
@@ -97,11 +155,20 @@ export default function Home({ stats, berita }) {
                             <Compass class="h-4.5 w-4.5 text-sky-200" />
                             <span>Jelajahi Profil Desa</span>
                         </Link>
+
+                        <button
+                            type="button"
+                            onClick={() => setShowDocModal(true)}
+                            class="inline-flex items-center gap-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 px-6 py-3.5 text-sm font-bold text-emerald-300 hover:text-white shadow-xl border border-emerald-400/40 backdrop-blur-md hover:scale-[1.03] transition-all cursor-pointer"
+                        >
+                            <ShieldCheck class="h-4.5 w-4.5 text-emerald-400" />
+                            <span>Surat Keterangan Bebas Pidana</span>
+                        </button>
                     </div>
 
                     {/* Carousel Navigation Indicators */}
                     <div class="mt-8 sm:mt-12 flex items-center justify-center gap-2.5 z-20">
-                        {heroImages.map((_, idx) => (
+                        {heroSlides.map((_, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => setCurrentHeroIdx(idx)}
@@ -115,6 +182,52 @@ export default function Home({ stats, berita }) {
                         ))}
                     </div>
                 </div>
+
+                {/* Modal View Full Resolution Police Certificate */}
+                {showDocModal && (
+                    <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm">
+                        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
+                            <div class="bg-gradient-to-r from-slate-950 via-sky-950 to-blue-950 text-white p-5 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/30">
+                                        <ShieldCheck class="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-extrabold leading-snug">Surat Keterangan Bebas Perkara Pidana</h3>
+                                        <p class="text-[11px] text-sky-200">Kepolisian Sektor Klego • No. SKET/01/IX/HUK.11.1/2026/Sek Klg</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowDocModal(false)}
+                                    class="p-2 text-sky-200 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                                >
+                                    <X class="h-5 w-5" />
+                                </button>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6 overflow-y-auto flex justify-center bg-slate-100">
+                                <img 
+                                    src="/images/hero/sket-bebas-pidana.png" 
+                                    alt="Surat Keterangan Bebas Perkara Pidana Polri" 
+                                    class="w-full max-w-lg rounded-xl shadow-lg border border-slate-300 bg-white" 
+                                />
+                            </div>
+
+                            <div class="bg-white p-4 px-6 border-t border-slate-200 flex items-center justify-between text-xs">
+                                <span class="text-slate-500 font-medium">Terverifikasi Bebas Perkara Pidana (2022 - 2026)</span>
+                                <a 
+                                    href="/images/hero/sket-bebas-pidana.png" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors shadow-xs"
+                                >
+                                    <span>Buka Dokumen Asli</span>
+                                    <ExternalLink class="h-3.5 w-3.5" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Quick Statistics Floating Bar */}
